@@ -154,6 +154,12 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
 /* Weight history */
 .weight-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
 
+/* Quantity stepper */
+.qty-stepper{display:flex;align-items:center;gap:0;background:rgba(30,41,59,0.8);border:1px solid rgba(255,255,255,0.1);border-radius:10px;overflow:hidden;}
+.qty-btn{background:none;border:none;color:#a5b4fc;font-size:18px;font-weight:700;cursor:pointer;padding:4px 12px;font-family:inherit;transition:background 0.15s;line-height:1;}
+.qty-btn:active{background:rgba(99,102,241,0.2);}
+.qty-val{color:#f1f5f9;font-size:15px;font-weight:700;min-width:24px;text-align:center;}
+
 @keyframes slideUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
 @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
 </style>
@@ -223,8 +229,9 @@ const DEFAULT_FOODS = [
   {id:'df3',name:'Paneer Sabji',calories:220,protein:14,carbs:8,fats:15},
   {id:'df4',name:'Whey Protein',calories:120,protein:24,carbs:3,fats:1.5},
   {id:'df5',name:'Lassi',calories:180,protein:6,carbs:28,fats:5},
-  {id:'df6',name:'Chicken Breast (100g)',calories:165,protein:31,carbs:0,fats:3.6},
-  {id:'df7',name:'Brown Rice (1 cup)',calories:216,protein:5,carbs:45,fats:1.8},
+
+  {id:'df6',name:'Tofu (100g)',calories:76,protein:8,carbs:2,fats:4.5},
+  {id:'df6b',name:'Rajma (1 cup)',calories:225,protein:15,carbs:40,fats:1},
   {id:'df8',name:'Oats (50g)',calories:188,protein:6.5,carbs:32,fats:3.5},
   {id:'df9',name:'Banana',calories:89,protein:1.1,carbs:23,fats:0.3},
   {id:'df10',name:'Eggs (2)',calories:148,protein:12,carbs:1,fats:10},
@@ -323,8 +330,8 @@ function foodItemHTML(e) {
       </div>
     </div>
     <div class="food-actions">
-      <button class="btn btn-sm btn-ghost" onclick="editEntry('${e.id}')">✏️</button>
-      <button class="btn btn-sm btn-danger" onclick="deleteEntry('${e.id}')">✕</button>
+      <button class="btn btn-sm btn-ghost" data-id="${e.id}" onclick="editEntry(this.dataset.id)">✏️</button>
+      <button class="btn btn-sm btn-danger" data-id="${e.id}" onclick="deleteEntry(this.dataset.id)">✕</button>
     </div>
   </div>`;
 }
@@ -721,6 +728,8 @@ function openAddModal(meal) {
   renderModal();
 }
 
+let modalQty = 1;
+
 function renderModal() {
   const allFoods = [...DEFAULT_FOODS, ...S.saved];
   const search = document.getElementById('modal_search') ? document.getElementById('modal_search').value : '';
@@ -733,28 +742,47 @@ function renderModal() {
     body = `
     <div class="field"><label>Food Name</label><div class="field-wrap"><input id="m_name" type="text" placeholder="e.g. Chicken Breast" autofocus/></div></div>
     <div class="grid2">
-      <div class="field"><label>Calories</label><div class="field-wrap"><input id="m_cal" type="number" placeholder="0"/><span class="unit">kcal</span></div></div>
+      <div class="field"><label>Calories</label><div class="field-wrap"><input id="m_cal" type="number" placeholder="0" oninput="changeManualQty(0)"/><span class="unit">kcal</span></div></div>
       <div class="field"><label>Protein</label><div class="field-wrap"><input id="m_prot" type="number" placeholder="0"/><span class="unit">g</span></div></div>
       <div class="field"><label>Carbs</label><div class="field-wrap"><input id="m_carbs" type="number" placeholder="0"/><span class="unit">g</span></div></div>
       <div class="field"><label>Fats</label><div class="field-wrap"><input id="m_fats" type="number" placeholder="0"/><span class="unit">g</span></div></div>
     </div>
+    <div style="margin-bottom:12px">
+      <label style="color:#94a3b8;font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;display:block;margin-bottom:6px">Quantity</label>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="qty-stepper" style="flex:1;justify-content:space-between">
+          <button class="qty-btn" style="flex:1" onclick="changeManualQty(-1)">−</button>
+          <span class="qty-val" id="manual_qty" style="flex:1;text-align:center;font-size:18px">1</span>
+          <button class="qty-btn" style="flex:1" onclick="changeManualQty(1)">+</button>
+        </div>
+        <div style="color:#475569;font-size:12px;font-weight:600;min-width:80px" id="manual_preview"></div>
+      </div>
+    </div>
     <button class="btn btn-primary btn-block" onclick="submitAdd()">Add to ${modalMeal}</button>`;
   } else {
-    const items = filtered.map(food=>`<div class="saved-item">
-      <div style="flex:1">
-        <div style="color:#f1f5f9;font-weight:600;font-size:14px">${food.name}</div>
-        <div class="food-macros" style="margin-top:4px">
-          <span class="food-kcal">${food.calories} kcal</span>
-          <span class="food-macro">P:${food.protein}g C:${food.carbs}g F:${food.fats}g</span>
+    const items = filtered.map(food=>{
+      const isDefault = DEFAULT_FOODS.find(d=>d.id===food.id);
+      return `<div class="saved-item">
+        <div style="flex:1">
+          <div style="color:#f1f5f9;font-weight:600;font-size:14px">${food.name}</div>
+          <div class="food-macros" style="margin-top:4px">
+            <span class="food-kcal">${food.calories} kcal</span>
+            <span class="food-macro">P:${food.protein}g C:${food.carbs}g F:${food.fats}g</span>
+          </div>
         </div>
-      </div>
-      <div style="display:flex;gap:6px">
-        <button class="btn btn-sm btn-ghost" onclick="fillForm('${food.id}')">Edit</button>
-        <button class="btn btn-sm btn-primary" onclick="quickAddModal('${food.id}')">Add</button>
-      </div>
-    </div>`).join('');
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="qty-stepper">
+            <button class="qty-btn" data-id="qty_${food.id}" onclick="changeQty('qty_${food.id}',-1)">−</button>
+            <span class="qty-val" id="qty_${food.id}">1</span>
+            <button class="qty-btn" data-id="qty_${food.id}" onclick="changeQty('qty_${food.id}',1)">+</button>
+          </div>
+          <button class="btn btn-sm btn-primary" data-id="${food.id}" onclick="quickAddModal(this.dataset.id)">Add</button>
+          ${!isDefault?`<button class="btn btn-sm btn-danger" data-id="${food.id}" onclick="deleteSavedModal(this.dataset.id)">✕</button>`:''}
+        </div>
+      </div>`;
+    }).join('');
     body = `<input class="search-input" id="modal_search" placeholder="Search foods..." oninput="renderModal()" style="margin-bottom:10px"/>
-    <div style="max-height:300px;overflow-y:auto">${items || '<div style="text-align:center;color:#475569;padding:20px">No foods found</div>'}</div>`;
+    <div style="max-height:320px;overflow-y:auto">${items || '<div style="text-align:center;color:#475569;padding:20px">No foods found</div>'}</div>`;
   }
 
   document.getElementById('modalContainer').innerHTML = `
@@ -785,11 +813,35 @@ function setModalMode(mode) { modalMode = mode; renderModal(); }
 function setModalMeal(meal) { modalMeal = meal; renderModal(); }
 function closeModal() { document.getElementById('modalContainer').innerHTML = ''; }
 
+function changeManualQty(delta) {
+  const el = document.getElementById('manual_qty');
+  if(!el) return;
+  let v = parseInt(el.textContent) + delta;
+  if(v < 1) v = 1;
+  if(v > 20) v = 20;
+  el.textContent = v;
+  // Update live preview
+  const cal = parseFloat(document.getElementById('m_cal').value) || 0;
+  const prev = document.getElementById('manual_preview');
+  if(prev && cal > 0) prev.textContent = `= ${Math.round(cal * v)} kcal`;
+  else if(prev) prev.textContent = '';
+}
+
 function submitAdd() {
   const name = document.getElementById('m_name').value;
-  const cal = document.getElementById('m_cal').value;
-  if(!name||!cal) return;
-  S.entries.push({id:genId(),name,calories:parseFloat(cal)||0,protein:parseFloat(document.getElementById('m_prot').value)||0,carbs:parseFloat(document.getElementById('m_carbs').value)||0,fats:parseFloat(document.getElementById('m_fats').value)||0,meal:modalMeal,timestamp:Date.now()});
+  const cal = parseFloat(document.getElementById('m_cal').value);
+  if(!name || !cal) return;
+  const qty = parseInt(document.getElementById('manual_qty')?.textContent) || 1;
+  S.entries.push({
+    id: genId(),
+    name: qty > 1 ? `${name} ×${qty}` : name,
+    calories: Math.round(cal * qty),
+    protein: Math.round((parseFloat(document.getElementById('m_prot').value)||0) * qty * 10) / 10,
+    carbs: Math.round((parseFloat(document.getElementById('m_carbs').value)||0) * qty * 10) / 10,
+    fats: Math.round((parseFloat(document.getElementById('m_fats').value)||0) * qty * 10) / 10,
+    meal: modalMeal,
+    timestamp: Date.now()
+  });
   persist();
   updateStreak();
   updateStreakUI();
@@ -812,11 +864,37 @@ function fillForm(id) {
   },50);
 }
 
+function changeQty(elId, delta) {
+  const el = document.getElementById(elId);
+  if(!el) return;
+  let v = parseInt(el.textContent) + delta;
+  if(v < 1) v = 1;
+  if(v > 20) v = 20;
+  el.textContent = v;
+}
+
+function deleteSavedModal(id) {
+  S.saved = S.saved.filter(f=>f.id!==id);
+  persist();
+  renderModal();
+}
+
 function quickAddModal(id) {
   const all = [...DEFAULT_FOODS,...S.saved];
   const food = all.find(f=>f.id===id);
   if(!food) return;
-  S.entries.push({...food,id:genId(),meal:modalMeal,timestamp:Date.now()});
+  const qtyEl = document.getElementById('qty_'+id);
+  const qty = qtyEl ? parseInt(qtyEl.textContent) || 1 : 1;
+  S.entries.push({
+    id:genId(),
+    name: qty > 1 ? `${food.name} ×${qty}` : food.name,
+    calories: Math.round(food.calories * qty),
+    protein: Math.round(food.protein * qty * 10) / 10,
+    carbs: Math.round(food.carbs * qty * 10) / 10,
+    fats: Math.round(food.fats * qty * 10) / 10,
+    meal:modalMeal,
+    timestamp:Date.now()
+  });
   persist();
   updateStreak();
   updateStreakUI();
@@ -846,7 +924,7 @@ function editEntry(id) {
           <div class="field"><label>Fats</label><div class="field-wrap"><input id="e_fats" type="number" value="${e.fats}"/><span class="unit">g</span></div></div>
         </div>
         <div class="meal-pills" id="editMealPills">${mealPills}</div>
-        <button class="btn btn-primary btn-block" onclick="saveEdit('${id}')">Save Changes</button>
+        <button class="btn btn-primary btn-block" data-id="${e.id}" onclick="saveEdit(this.dataset.id)">Save Changes</button>
       </div>
     </div>
   </div>`;
@@ -861,17 +939,24 @@ function setEditMeal(btn, meal) {
 function saveEdit(id) {
   const activeMeal = document.querySelector('#editMealPills .meal-pill.active');
   const meal = activeMeal ? activeMeal.textContent.trim() : 'Snacks';
-  const idx = S.entries.findIndex(x=>x.id===id);
-  if(idx<0) return;
-  S.entries[idx] = {...S.entries[idx],name:document.getElementById('e_name').value,calories:parseFloat(document.getElementById('e_cal').value)||0,protein:parseFloat(document.getElementById('e_prot').value)||0,carbs:parseFloat(document.getElementById('e_carbs').value)||0,fats:parseFloat(document.getElementById('e_fats').value)||0,meal};
+  const idx = S.entries.findIndex(x => x.id === id);
+  if(idx < 0) return;
+  S.entries[idx] = {
+    ...S.entries[idx],
+    name: document.getElementById('e_name').value,
+    calories: parseFloat(document.getElementById('e_cal').value) || 0,
+    protein: parseFloat(document.getElementById('e_prot').value) || 0,
+    carbs: parseFloat(document.getElementById('e_carbs').value) || 0,
+    fats: parseFloat(document.getElementById('e_fats').value) || 0,
+    meal
+  };
   persist();
   closeModal();
   render();
 }
 
 function deleteEntry(id) {
-  if(!confirm('Delete this entry?')) return;
-  S.entries = S.entries.filter(e=>e.id!==id);
+  S.entries = S.entries.filter(e => e.id !== id);
   persist();
   render();
 }
