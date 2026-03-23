@@ -8,787 +8,878 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="FuelTrack"/>
 <meta name="theme-color" content="#020617"/>
-<title>FuelTrack — Premium Calorie Tracker</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap" rel="stylesheet"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<title>FuelTrack</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html,body{height:100%;background:#020617;}
-  body{font-family:'DM Sans',-apple-system,sans-serif;color:#f1f5f9;overflow-x:hidden;}
-  ::-webkit-scrollbar{width:3px;}
-  ::-webkit-scrollbar-track{background:transparent;}
-  ::-webkit-scrollbar-thumb{background:rgba(99,102,241,0.3);border-radius:99px;}
-  input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
-  input,select,button{font-family:'DM Sans',-apple-system,sans-serif;}
-  select option{background:#0f172a;}
-  @keyframes slideUp{from{opacity:0;transform:translateY(24px) scale(0.97);}to{opacity:1;transform:translateY(0) scale(1);}}
-  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;background:#020617;font-family:'DM Sans',-apple-system,sans-serif;color:#f1f5f9;overflow-x:hidden;}
+:root{--bg:#020617;--card:rgba(15,23,42,0.85);--border:rgba(255,255,255,0.08);--text:#f1f5f9;--sub:#64748b;--accent:#6366f1;--orange:#f97316;--cyan:#22d3ee;--purple:#a78bfa;--pink:#fb7185;--green:#34d399;}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-thumb{background:rgba(99,102,241,0.3);border-radius:99px;}
+input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
+
+/* Layout */
+#app{min-height:100vh;background:radial-gradient(ellipse at 20% 0%,#1e1b4b 0%,transparent 50%),radial-gradient(ellipse at 80% 100%,#0c1a2e 0%,transparent 50%),#020617;padding-bottom:80px;}
+
+/* Header */
+.header{position:sticky;top:0;z-index:100;background:rgba(2,6,23,0.9);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.06);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;}
+.logo{font-weight:800;font-size:20px;letter-spacing:-0.03em;}
+.logo span:first-child{background:linear-gradient(135deg,#6366f1,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.logo-date{color:#334155;font-size:11px;font-weight:500;margin-top:2px;}
+.header-right{display:flex;align-items:center;gap:10px;}
+.streak-badge{background:rgba(249,115,22,0.15);border:1px solid rgba(249,115,22,0.3);border-radius:99px;padding:4px 10px;display:flex;align-items:center;gap:4px;color:#f97316;font-size:12px;font-weight:700;}
+.add-btn{background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;border-radius:12px;width:38px;height:38px;color:white;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(99,102,241,0.5);line-height:1;}
+
+/* Content */
+.content{max-width:540px;margin:0 auto;padding:16px 14px 0;}
+
+/* Tabs */
+.tab-bar{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(2,6,23,0.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-around;padding:8px 0 20px;}
+.tab-btn{flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:5px 2px;position:relative;}
+.tab-btn.active::before{content:’’;position:absolute;top:-8px;left:50%;transform:translateX(-50%);width:20px;height:3px;background:linear-gradient(90deg,#6366f1,#a78bfa);border-radius:99px;}
+.tab-icon{font-size:17px;}
+.tab-label{font-size:10px;font-weight:600;color:#334155;font-family:inherit;}
+.tab-btn.active .tab-label{color:#a5b4fc;}
+.tab-btn:not(.active) .tab-icon{filter:grayscale(1) opacity(0.45);}
+
+/* Cards */
+.card{background:rgba(15,23,42,0.8);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:18px;margin-bottom:12px;}
+.card-title{color:#f1f5f9;font-weight:700;font-size:15px;margin-bottom:14px;}
+
+/* Inputs */
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.field label{color:#94a3b8;font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;}
+.field-wrap{position:relative;display:flex;align-items:center;}
+.field input,.field select{width:100%;background:rgba(30,41,59,0.8);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:10px 14px;color:#f1f5f9;font-size:15px;outline:none;font-family:inherit;transition:border-color 0.2s;-webkit-appearance:none;}
+.field input:focus,.field select:focus{border-color:rgba(99,102,241,0.8);}
+.field .unit{position:absolute;right:12px;color:#475569;font-size:12px;font-weight:600;pointer-events:none;}
+.field select{cursor:pointer;}
+
+/* Grid */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+/* Buttons */
+.btn{border:none;border-radius:12px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s;letter-spacing:0.01em;}
+.btn:active{transform:scale(0.96);}
+.btn-primary{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;box-shadow:0 4px 14px rgba(99,102,241,0.4);}
+.btn-orange{background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;box-shadow:0 4px 14px rgba(249,115,22,0.4);}
+.btn-success{background:linear-gradient(135deg,#10b981,#059669);color:#fff;box-shadow:0 4px 14px rgba(16,185,129,0.3);}
+.btn-ghost{background:rgba(255,255,255,0.05);color:#94a3b8;border:1px solid rgba(255,255,255,0.08)!important;}
+.btn-danger{background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3)!important;}
+.btn-sm{padding:6px 12px;font-size:12px;border-radius:10px;}
+.btn-block{width:100%;padding:13px;}
+.btn:disabled{background:rgba(255,255,255,0.05);color:#475569;box-shadow:none;cursor:not-allowed;}
+
+/* Progress bar */
+.progress-wrap{background:#1e293b;border-radius:99px;overflow:hidden;}
+.progress-bar{height:100%;border-radius:99px;transition:width 0.6s cubic-bezier(0.34,1.56,0.64,1);}
+
+/* Macro pills */
+.macro-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+.macro-pill{border-radius:10px;padding:6px 12px;display:flex;flex-direction:column;align-items:center;min-width:64px;}
+.macro-val{font-size:15px;font-weight:700;}
+.macro-label{font-size:11px;font-weight:500;color:#64748b;margin-top:1px;}
+
+/* Meal section */
+.meal-section{margin-bottom:0;}
+.meal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.meal-name{color:#f1f5f9;font-weight:700;font-size:15px;}
+.meal-meta{color:#475569;font-size:12px;margin-top:2px;}
+
+/* Food item */
+.food-item{background:rgba(30,41,59,0.4);border-radius:12px;padding:10px 12px;margin-bottom:8px;border:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.food-name{color:#e2e8f0;font-weight:600;font-size:14px;}
+.food-macros{display:flex;gap:8px;margin-top:3px;flex-wrap:wrap;}
+.food-kcal{color:#f97316;font-size:12px;font-weight:700;}
+.food-macro{color:#475569;font-size:12px;}
+.food-actions{display:flex;gap:4px;flex-shrink:0;}
+
+/* Meal pills */
+.meal-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.meal-pill{padding:6px 14px;border-radius:99px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;font-family:inherit;}
+.meal-pill.active{background:rgba(99,102,241,0.3);color:#a5b4fc;}
+.meal-pill:not(.active){background:rgba(30,41,59,0.6);color:#64748b;}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;z-index:1000;background:rgba(2,6,23,0.88);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;align-items:flex-end;justify-content:center;}
+.modal{background:rgba(13,20,38,0.99);border:1px solid rgba(255,255,255,0.1);border-radius:24px 24px 0 0;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;box-shadow:0 -20px 60px rgba(0,0,0,0.7);animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+.modal-handle{display:flex;justify-content:center;padding:12px 0 0;}
+.modal-handle-bar{width:40px;height:4px;background:rgba(255,255,255,0.15);border-radius:99px;}
+.modal-header{padding:16px 20px 0;display:flex;align-items:center;justify-content:space-between;}
+.modal-title{color:#f1f5f9;font-size:18px;font-weight:700;}
+.modal-close{background:rgba(255,255,255,0.08);border:none;color:#94a3b8;cursor:pointer;font-size:16px;width:30px;height:30px;border-radius:99px;display:flex;align-items:center;justify-content:center;font-family:inherit;}
+.modal-body{padding:18px 20px 30px;}
+
+/* Mode toggle */
+.mode-toggle{display:flex;background:rgba(30,41,59,0.6);border-radius:12px;padding:4px;gap:4px;margin-bottom:14px;}
+.mode-btn{flex:1;padding:8px;border-radius:9px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;font-family:inherit;}
+.mode-btn.active{background:rgba(99,102,241,0.3);color:#a5b4fc;}
+.mode-btn:not(.active){background:transparent;color:#475569;}
+
+/* Insight */
+.insight{border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.insight-icon{font-size:16px;}
+.insight-text{font-size:13px;font-weight:500;}
+
+/* Stats grid */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.stat-card{background:rgba(15,23,42,0.8);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:14px 16px;}
+.stat-label{color:#64748b;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;}
+.stat-value{font-size:24px;font-weight:800;margin-top:6px;}
+.stat-unit{font-size:12px;color:#475569;font-weight:400;}
+
+/* Bar chart */
+.bar-chart{display:flex;gap:6px;align-items:flex-end;height:130px;}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;}
+.bar-val{font-size:10px;color:#f97316;font-weight:700;height:14px;display:flex;align-items:center;}
+.bar{width:100%;border-radius:5px 5px 0 0;transition:height 0.5s ease;min-height:4px;}
+.bar-day{font-size:11px;color:#475569;font-weight:400;}
+.bar-day.today{color:#a5b4fc;font-weight:700;}
+
+/* Search input */
+.search-wrap{margin-bottom:12px;}
+.search-input{width:100%;background:rgba(30,41,59,0.8);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:10px 14px;color:#f1f5f9;font-size:15px;outline:none;font-family:inherit;}
+.search-input:focus{border-color:rgba(99,102,241,0.8);}
+
+/* Saved food item */
+.saved-item{background:rgba(15,23,42,0.8);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+
+/* Streak banner */
+.streak-banner{background:linear-gradient(135deg,rgba(249,115,22,0.2),rgba(234,88,12,0.1));border:1px solid rgba(249,115,22,0.3);border-radius:16px;padding:12px 18px;display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+
+/* Deficit card */
+.deficit-card{background:rgba(34,211,238,0.1);border:1px solid rgba(34,211,238,0.3);border-radius:14px;padding:10px 16px;text-align:center;}
+.deficit-card.over{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.3);}
+
+/* Weight history */
+.weight-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
+
+@keyframes slideUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
 </style>
+
 </head>
 <body>
-<div id="root"></div>
-<script type="text/babel">
-const{useState,useEffect,useRef,useCallback}=React;
+<div id="app">
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <div class="logo"><span>Fuel</span><span style="color:#f1f5f9">Track</span></div>
+      <div class="logo-date" id="headerDate"></div>
+    </div>
+    <div class="header-right">
+      <div class="streak-badge" id="streakBadge" style="display:none">🔥 <span id="streakNum">0</span></div>
+      <button class="add-btn" onclick="openAddModal()">+</button>
+    </div>
+  </div>
 
-// ── CONSTANTS ──
-const MEAL_TYPES=[“Breakfast”,“Lunch”,“Dinner”,“Snacks”];
-const ACTIVITY_LEVELS=[
-{label:“Sedentary”,value:1.2,desc:“Little/no exercise”},
-{label:“Light”,value:1.375,desc:“1–3 days/week”},
-{label:“Moderate”,value:1.55,desc:“3–5 days/week”},
-{label:“Active”,value:1.725,desc:“6–7 days/week”},
-{label:“Very Active”,value:1.9,desc:“Hard exercise daily”},
+  <!-- Content -->
+
+  <div class="content" id="mainContent"></div>
+
+  <!-- Tab Bar -->
+
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('dashboard',this)" id="tab-dashboard">
+      <span class="tab-icon">⚡</span><span class="tab-label">Dashboard</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('log',this)" id="tab-log">
+      <span class="tab-icon">📋</span><span class="tab-label">Log</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('saved',this)" id="tab-saved">
+      <span class="tab-icon">⭐</span><span class="tab-label">Saved</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('calc',this)" id="tab-calc">
+      <span class="tab-icon">🔢</span><span class="tab-label">Calc</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('analytics',this)" id="tab-analytics">
+      <span class="tab-icon">📊</span><span class="tab-label">Analytics</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('goals',this)" id="tab-goals">
+      <span class="tab-icon">🎯</span><span class="tab-label">Goals</span>
+    </button>
+  </div>
+</div>
+
+<!-- Modal Container -->
+
+<div id="modalContainer"></div>
+
+<script>
+// ── STATE ──
+const S = {
+  entries: load('ft_entries', []),
+  saved: load('ft_saved', []),
+  goals: load('ft_goals', {calories:2000, protein:150}),
+  streak: load('ft_streak', 0),
+  lastDate: load('ft_lastDate', ''),
+  currentTab: 'dashboard',
+  modalMeal: 'Breakfast',
+};
+
+const DEFAULT_FOODS = [
+  {id:'df1',name:'Roti',calories:80,protein:2.5,carbs:15,fats:1.5},
+  {id:'df2',name:'Dal Tadka',calories:150,protein:9,carbs:22,fats:3},
+  {id:'df3',name:'Paneer Sabji',calories:220,protein:14,carbs:8,fats:15},
+  {id:'df4',name:'Whey Protein',calories:120,protein:24,carbs:3,fats:1.5},
+  {id:'df5',name:'Lassi',calories:180,protein:6,carbs:28,fats:5},
+  {id:'df6',name:'Chicken Breast (100g)',calories:165,protein:31,carbs:0,fats:3.6},
+  {id:'df7',name:'Brown Rice (1 cup)',calories:216,protein:5,carbs:45,fats:1.8},
+  {id:'df8',name:'Oats (50g)',calories:188,protein:6.5,carbs:32,fats:3.5},
+  {id:'df9',name:'Banana',calories:89,protein:1.1,carbs:23,fats:0.3},
+  {id:'df10',name:'Eggs (2)',calories:148,protein:12,carbs:1,fats:10},
+  {id:'df11',name:'Dahi (100g)',calories:61,protein:3.5,carbs:4.7,fats:3.3},
+  {id:'df12',name:'Mixed Veg Curry',calories:130,protein:4,carbs:18,fats:5},
+  {id:'df13',name:'Idli (2 pcs)',calories:130,protein:4,carbs:26,fats:0.5},
+  {id:'df14',name:'Sambar (1 cup)',calories:100,protein:4,carbs:16,fats:2},
+  {id:'df15',name:'Curd Rice',calories:200,protein:5,carbs:38,fats:3},
 ];
-const DEFAULT_FOODS=[
-{id:“df1”,name:“Roti”,calories:80,protein:2.5,carbs:15,fats:1.5},
-{id:“df2”,name:“Dal Tadka”,calories:150,protein:9,carbs:22,fats:3},
-{id:“df3”,name:“Paneer Sabji”,calories:220,protein:14,carbs:8,fats:15},
-{id:“df4”,name:“Whey Protein”,calories:120,protein:24,carbs:3,fats:1.5},
-{id:“df5”,name:“Lassi”,calories:180,protein:6,carbs:28,fats:5},
-{id:“df6”,name:“Chicken Breast (100g)”,calories:165,protein:31,carbs:0,fats:3.6},
-{id:“df7”,name:“Brown Rice (1 cup)”,calories:216,protein:5,carbs:45,fats:1.8},
-{id:“df8”,name:“Oats (50g)”,calories:188,protein:6.5,carbs:32,fats:3.5},
-{id:“df9”,name:“Banana”,calories:89,protein:1.1,carbs:23,fats:0.3},
-{id:“df10”,name:“Eggs (2)”,calories:148,protein:12,carbs:1,fats:10},
-{id:“df11”,name:“Dahi (100g)”,calories:61,protein:3.5,carbs:4.7,fats:3.3},
-{id:“df12”,name:“Mixed Veg Curry”,calories:130,protein:4,carbs:18,fats:5},
-{id:“df13”,name:“Sambar (1 cup)”,calories:100,protein:4,carbs:16,fats:2},
-{id:“df14”,name:“Idli (2 pcs)”,calories:130,protein:4,carbs:26,fats:0.5},
-{id:“df15”,name:“Curd Rice”,calories:200,protein:5,carbs:38,fats:3},
-];
-const TABS=[“Dashboard”,“Log”,“Saved”,“Calc”,“Analytics”,“Goals”];
-const TAB_ICONS={Dashboard:“⚡”,Log:“📋”,Saved:“⭐”,Calc:“🔢”,Analytics:“📊”,Goals:“🎯”};
-const C={calories:”#f97316”,protein:”#22d3ee”,carbs:”#a78bfa”,fats:”#fb7185”};
 
-// ── HELPERS ──
-const store={
-get:(k,fb)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):fb;}catch{return fb;}},
-set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
-};
-const today=()=>new Date().toISOString().split(“T”)[0];
-const genId=()=>Math.random().toString(36).slice(2,9);
-const clamp=(v,a,b)=>Math.min(Math.max(v,a),b);
-const calcTDEE=({weight,height,age,gender,activity})=>{
-const bmr=gender===“male”?10*weight+6.25*height-5*age+5:10*weight+6.25*height-5*age-161;
-return Math.round(bmr*activity);
-};
+const MEALS = ['Breakfast','Lunch','Dinner','Snacks'];
 
-// ── UI ATOMS ──
-function MacroPill({label,value,color,unit=“g”}){
-return(
-<div style={{background:`${color}18`,border:`1px solid ${color}40`,borderRadius:10,padding:“6px 12px”,display:“flex”,flexDirection:“column”,alignItems:“center”,minWidth:64}}>
-<span style={{color,fontSize:15,fontWeight:700}}>{value}{unit}</span>
-<span style={{color:”#64748b”,fontSize:11,fontWeight:500,marginTop:1}}>{label}</span>
-</div>
-);
+function load(k, fb) {
+  try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fb; } catch { return fb; }
+}
+function save(k, v) {
+  try { localStorage.setItem(k, JSON.stringify(v)); } catch {}
+}
+function persist() {
+  save('ft_entries', S.entries);
+  save('ft_saved', S.saved);
+  save('ft_goals', S.goals);
+  save('ft_streak', S.streak);
+  save('ft_lastDate', S.lastDate);
+}
+function genId() { return Math.random().toString(36).slice(2,9); }
+function today() { return new Date().toISOString().split('T')[0]; }
+function clamp(v,a,b) { return Math.min(Math.max(v,a),b); }
+function todayEntries() { return S.entries.filter(e => new Date(e.timestamp).toISOString().split('T')[0] === today()); }
+function totals(entries) {
+  return entries.reduce((a,e) => ({calories:a.calories+e.calories,protein:a.protein+e.protein,carbs:a.carbs+e.carbs,fats:a.fats+e.fats}),{calories:0,protein:0,carbs:0,fats:0});
 }
 
-function ProgressBar({value,max,color,height=8}){
-const pct=max>0?clamp((value/max)*100,0,110):0;
-const over=pct>100;
-return(
-<div style={{background:”#1e293b”,borderRadius:99,height,overflow:“hidden”}}>
-<div style={{height:“100%”,width:`${Math.min(pct,100)}%`,background:over?“linear-gradient(90deg,#ef4444,#f97316)”:`linear-gradient(90deg,${color}cc,${color})`,borderRadius:99,transition:“width 0.7s cubic-bezier(0.34,1.56,0.64,1)”,boxShadow:`0 0 10px ${color}55`}}/>
-</div>
-);
+// ── STREAK ──
+function updateStreak() {
+  const t = today();
+  const te = todayEntries();
+  if (te.length > 0 && S.lastDate !== t) {
+    const yd = new Date(); yd.setDate(yd.getDate()-1);
+    const yds = yd.toISOString().split('T')[0];
+    S.streak = S.lastDate === yds ? S.streak + 1 : 1;
+    S.lastDate = t;
+    persist();
+  }
 }
 
-function Card({children,style={},onClick,hover=false}){
-const[h,setH]=useState(false);
-return(
-<div onClick={onClick} onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)}
-style={{background:h&&hover?“rgba(30,41,59,0.95)”:“rgba(15,23,42,0.75)”,backdropFilter:“blur(20px)”,WebkitBackdropFilter:“blur(20px)”,border:h&&hover?“1px solid rgba(99,102,241,0.4)”:“1px solid rgba(255,255,255,0.07)”,borderRadius:20,padding:20,transition:“all 0.25s ease”,transform:h&&hover?“translateY(-2px)”:“translateY(0)”,boxShadow:h&&hover?“0 20px 40px rgba(0,0,0,0.4)”:“0 4px 20px rgba(0,0,0,0.2)”,cursor:onClick?“pointer”:“default”,…style}}>
-{children}
-</div>
-);
+// ── HEADER ──
+function initHeader() {
+  document.getElementById('headerDate').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
+  updateStreakUI();
+}
+function updateStreakUI() {
+  const b = document.getElementById('streakBadge');
+  const n = document.getElementById('streakNum');
+  if (S.streak > 0) { b.style.display='flex'; n.textContent = S.streak; }
+  else { b.style.display='none'; }
 }
 
-function Inp({label,type=“text”,value,onChange,placeholder,autoFocus,unit,min}){
-const ref=useRef();
-useEffect(()=>{if(autoFocus)setTimeout(()=>ref.current?.focus(),80);},[autoFocus]);
-return(
-<div style={{display:“flex”,flexDirection:“column”,gap:5}}>
-{label&&<label style={{color:”#94a3b8”,fontSize:11,fontWeight:600,letterSpacing:“0.06em”,textTransform:“uppercase”}}>{label}</label>}
-<div style={{position:“relative”,display:“flex”,alignItems:“center”}}>
-<input ref={ref} type={type} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} min={min}
-style={{width:“100%”,background:“rgba(30,41,59,0.8)”,border:“1px solid rgba(255,255,255,0.1)”,borderRadius:12,padding:unit?“10px 40px 10px 14px”:“10px 14px”,color:”#f1f5f9”,fontSize:15,outline:“none”,transition:“border-color 0.2s”}}
-onFocus={e=>e.target.style.borderColor=“rgba(99,102,241,0.8)”} onBlur={e=>e.target.style.borderColor=“rgba(255,255,255,0.1)”}/>
-{unit&&<span style={{position:“absolute”,right:12,color:”#475569”,fontSize:12,fontWeight:600}}>{unit}</span>}
-</div>
-</div>
-);
+// ── TABS ──
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  S.currentTab = name;
+  render();
 }
 
-function Sel({label,value,onChange,options}){
-return(
-<div style={{display:“flex”,flexDirection:“column”,gap:5}}>
-{label&&<label style={{color:”#94a3b8”,fontSize:11,fontWeight:600,letterSpacing:“0.06em”,textTransform:“uppercase”}}>{label}</label>}
-<select value={value} onChange={e=>onChange(e.target.value)}
-style={{background:“rgba(30,41,59,0.8)”,border:“1px solid rgba(255,255,255,0.1)”,borderRadius:12,padding:“10px 14px”,color:”#f1f5f9”,fontSize:14,outline:“none”,cursor:“pointer”}}>
-{options.map(o=><option key={o.value} value={o.value}>{o.label}</option>)}
-</select>
-</div>
-);
+function render() {
+  const c = document.getElementById('mainContent');
+  if (S.currentTab === 'dashboard') c.innerHTML = renderDashboard();
+  else if (S.currentTab === 'log') c.innerHTML = renderLog();
+  else if (S.currentTab === 'saved') c.innerHTML = renderSaved();
+  else if (S.currentTab === 'calc') c.innerHTML = renderCalc();
+  else if (S.currentTab === 'analytics') c.innerHTML = renderAnalytics();
+  else if (S.currentTab === 'goals') c.innerHTML = renderGoals();
 }
 
-function Btn({children,onClick,variant=“primary”,small=false,style={},disabled=false}){
-const[p,setP]=useState(false);
-const V={
-primary:{bg:“linear-gradient(135deg,#6366f1,#8b5cf6)”,color:”#fff”,border:“none”,shadow:“0 4px 14px rgba(99,102,241,0.4)”},
-danger:{bg:“rgba(239,68,68,0.15)”,color:”#f87171”,border:“1px solid rgba(239,68,68,0.3)”,shadow:“none”},
-ghost:{bg:“rgba(255,255,255,0.05)”,color:”#94a3b8”,border:“1px solid rgba(255,255,255,0.08)”,shadow:“none”},
-success:{bg:“linear-gradient(135deg,#10b981,#059669)”,color:”#fff”,border:“none”,shadow:“0 4px 14px rgba(16,185,129,0.4)”},
-orange:{bg:“linear-gradient(135deg,#f97316,#ea580c)”,color:”#fff”,border:“none”,shadow:“0 4px 14px rgba(249,115,22,0.4)”},
-};
-const v=V[variant]||V.primary;
-return(
-<button onClick={onClick} disabled={disabled} onMouseDown={()=>setP(true)} onMouseUp={()=>setP(false)} onMouseLeave={()=>setP(false)}
-style={{background:disabled?“rgba(255,255,255,0.05)”:v.bg,color:disabled?”#475569”:v.color,border:v.border,borderRadius:small?10:12,padding:small?“6px 14px”:“10px 20px”,fontSize:small?12:14,fontWeight:600,cursor:disabled?“not-allowed”:“pointer”,transform:p&&!disabled?“scale(0.96)”:“scale(1)”,transition:“all 0.15s ease”,letterSpacing:“0.01em”,boxShadow:disabled?“none”:v.shadow,…style}}>
-{children}
-</button>
-);
+// ── PROGRESS BAR HTML ──
+function progressBarHTML(value, max, color, height=8) {
+  const pct = max > 0 ? clamp((value/max)*100, 0, 110) : 0;
+  const over = pct > 100;
+  const bg = over ? 'linear-gradient(90deg,#ef4444,#f97316)' : `linear-gradient(90deg,${color}cc,${color})`;
+  return `<div class="progress-wrap" style="height:${height}px"><div class="progress-bar" style="width:${Math.min(pct,100)}%;background:${bg};box-shadow:0 0 10px ${color}55;height:100%"></div></div>`;
 }
 
-// ── MEAL SELECTOR ──
-function MealPicker({value,onChange}){
-return(
-<div style={{display:“flex”,gap:6,flexWrap:“wrap”}}>
-{MEAL_TYPES.map(m=>(
-<button key={m} onClick={()=>onChange(m)}
-style={{padding:“6px 14px”,borderRadius:99,border:“none”,background:value===m?“rgba(99,102,241,0.3)”:“rgba(30,41,59,0.6)”,color:value===m?”#a5b4fc”:”#64748b”,cursor:“pointer”,fontSize:13,fontWeight:600,transition:“all 0.2s”}}>
-{m}
-</button>
-))}
-</div>
-);
+function macroPillHTML(label, value, color, unit='g') {
+  return `<div class="macro-pill" style="background:${color}18;border:1px solid ${color}40"><span class="macro-val" style="color:${color}">${Math.round(value)}${unit}</span><span class="macro-label">${label}</span></div>`;
 }
 
-// ── FOOD ITEM ──
-function FoodItem({entry,onDelete,onEdit}){
-return(
-<div style={{background:“rgba(30,41,59,0.4)”,borderRadius:12,padding:“10px 12px”,marginTop:8,border:“1px solid rgba(255,255,255,0.05)”}}>
-<div style={{display:“flex”,justifyContent:“space-between”,alignItems:“center”}}>
-<div style={{flex:1}}>
-<div style={{color:”#e2e8f0”,fontWeight:600,fontSize:14}}>{entry.name}</div>
-<div style={{display:“flex”,gap:8,marginTop:3,flexWrap:“wrap”}}>
-<span style={{color:C.calories,fontSize:12,fontWeight:700}}>{entry.calories} kcal</span>
-<span style={{color:”#475569”,fontSize:12}}>P:{entry.protein}g · C:{entry.carbs}g · F:{entry.fats}g</span>
-</div>
-</div>
-<div style={{display:“flex”,gap:4,marginLeft:8}}>
-<Btn small variant=“ghost” onClick={()=>onEdit(entry)}>✏️</Btn>
-<Btn small variant=“danger” onClick={()=>onDelete(entry.id)}>✕</Btn>
-</div>
-</div>
-</div>
-);
-}
-
-// ── ADD FOOD MODAL ──
-function AddModal({onClose,onAdd,savedFoods,mealType}){
-const[mode,setMode]=useState(“manual”);
-const[name,setName]=useState(””);
-const[calories,setCalories]=useState(””);
-const[protein,setProtein]=useState(””);
-const[carbs,setCarbs]=useState(””);
-const[fats,setFats]=useState(””);
-const[meal,setMeal]=useState(mealType||“Breakfast”);
-const[search,setSearch]=useState(””);
-
-const allSaved=[…DEFAULT_FOODS,…savedFoods];
-const filtered=allSaved.filter(f=>f.name.toLowerCase().includes(search.toLowerCase()));
-
-const fill=(food)=>{setName(food.name);setCalories(String(food.calories));setProtein(String(food.protein));setCarbs(String(food.carbs));setFats(String(food.fats));setMode(“manual”);};
-const quickAdd=(food)=>{onAdd({…food,id:genId(),meal,timestamp:Date.now()});onClose();};
-const submit=()=>{
-if(!name||!calories)return;
-onAdd({id:genId(),name,calories:parseFloat(calories)||0,protein:parseFloat(protein)||0,carbs:parseFloat(carbs)||0,fats:parseFloat(fats)||0,meal,timestamp:Date.now()});
-onClose();
-};
-
-return(
-<div onClick={e=>e.target===e.currentTarget&&onClose()}
-style={{position:“fixed”,inset:0,zIndex:1000,background:“rgba(2,6,23,0.88)”,backdropFilter:“blur(10px)”,display:“flex”,alignItems:“flex-end”,justifyContent:“center”,padding:“0 0 0 0”}}>
-<div style={{background:“rgba(13,20,38,0.99)”,border:“1px solid rgba(255,255,255,0.1)”,borderRadius:“24px 24px 0 0”,width:“100%”,maxWidth:540,maxHeight:“90vh”,overflow:“auto”,boxShadow:“0 -20px 60px rgba(0,0,0,0.7)”,animation:“slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1)”}}>
-{/* Handle */}
-<div style={{display:“flex”,justifyContent:“center”,padding:“12px 0 0”}}>
-<div style={{width:40,height:4,background:“rgba(255,255,255,0.15)”,borderRadius:99}}/>
-</div>
-<div style={{padding:“16px 20px 0”,display:“flex”,alignItems:“center”,justifyContent:“space-between”}}>
-<h3 style={{color:”#f1f5f9”,fontSize:18,fontWeight:700}}>Add Food</h3>
-<button onClick={onClose} style={{background:“rgba(255,255,255,0.08)”,border:“none”,color:”#94a3b8”,cursor:“pointer”,fontSize:16,width:30,height:30,borderRadius:99,display:“flex”,alignItems:“center”,justifyContent:“center”}}>✕</button>
-</div>
-{/* Mode Toggle */}
-<div style={{padding:“14px 20px 0”}}>
-<div style={{display:“flex”,background:“rgba(30,41,59,0.6)”,borderRadius:12,padding:4,gap:4}}>
-{[“manual”,“saved”].map(m=>(
-<button key={m} onClick={()=>setMode(m)}
-style={{flex:1,padding:“8px 0”,borderRadius:9,border:“none”,background:mode===m?“rgba(99,102,241,0.3)”:“transparent”,color:mode===m?”#a5b4fc”:”#475569”,cursor:“pointer”,fontSize:13,fontWeight:600,transition:“all 0.2s”}}>
-{m===“manual”?“✏️ Manual Entry”:“⚡ Quick Add”}
-</button>
-))}
-</div>
-</div>
-<div style={{padding:20,display:“flex”,flexDirection:“column”,gap:14}}>
-<MealPicker value={meal} onChange={setMeal}/>
-{mode===“manual”?(
-<>
-<Inp label="Food Name" value={name} onChange={setName} placeholder="e.g. Chicken Breast" autoFocus/>
-<div style={{display:“grid”,gridTemplateColumns:“1fr 1fr”,gap:12}}>
-<Inp label="Calories" type="number" value={calories} onChange={setCalories} unit="kcal"/>
-<Inp label="Protein" type="number" value={protein} onChange={setProtein} unit="g"/>
-<Inp label="Carbs" type="number" value={carbs} onChange={setCarbs} unit="g"/>
-<Inp label="Fats" type="number" value={fats} onChange={setFats} unit="g"/>
-</div>
-<Btn onClick={submit} disabled={!name||!calories} style={{width:“100%”,padding:“13px”}}>Add to {meal}</Btn>
-</>
-):(
-<>
-<Inp value={search} onChange={setSearch} placeholder="Search foods..." autoFocus/>
-<div style={{display:“flex”,flexDirection:“column”,gap:8,maxHeight:300,overflowY:“auto”}}>
-{filtered.map(food=>(
-<div key={food.id} style={{background:“rgba(30,41,59,0.5)”,border:“1px solid rgba(255,255,255,0.06)”,borderRadius:14,padding:“12px 14px”,display:“flex”,alignItems:“center”,justifyContent:“space-between”,gap:10}}>
-<div style={{flex:1}}>
-<div style={{color:”#f1f5f9”,fontWeight:600,fontSize:14}}>{food.name}</div>
-<div style={{display:“flex”,gap:8,marginTop:3,flexWrap:“wrap”}}>
-<span style={{color:C.calories,fontSize:12,fontWeight:700}}>{food.calories} kcal</span>
-<span style={{color:”#475569”,fontSize:12}}>P:{food.protein}g C:{food.carbs}g F:{food.fats}g</span>
-</div>
-</div>
-<div style={{display:“flex”,gap:6}}>
-<Btn small variant=“ghost” onClick={()=>fill(food)}>Edit</Btn>
-<Btn small onClick={()=>quickAdd(food)}>Add</Btn>
-</div>
-</div>
-))}
-{filtered.length===0&&<div style={{textAlign:“center”,color:”#475569”,padding:“20px 0”}}>No foods found</div>}
-</div>
-</>
-)}
-</div>
-</div>
-</div>
-);
-}
-
-// ── EDIT MODAL ──
-function EditModal({entry,onClose,onSave}){
-const[name,setName]=useState(entry.name);
-const[calories,setCalories]=useState(String(entry.calories));
-const[protein,setProtein]=useState(String(entry.protein));
-const[carbs,setCarbs]=useState(String(entry.carbs));
-const[fats,setFats]=useState(String(entry.fats));
-const[meal,setMeal]=useState(entry.meal);
-return(
-<div onClick={e=>e.target===e.currentTarget&&onClose()}
-style={{position:“fixed”,inset:0,zIndex:1000,background:“rgba(2,6,23,0.88)”,backdropFilter:“blur(10px)”,display:“flex”,alignItems:“flex-end”,justifyContent:“center”}}>
-<div style={{background:“rgba(13,20,38,0.99)”,border:“1px solid rgba(255,255,255,0.1)”,borderRadius:“24px 24px 0 0”,width:“100%”,maxWidth:540,maxHeight:“85vh”,overflow:“auto”,boxShadow:“0 -20px 60px rgba(0,0,0,0.7)”,animation:“slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1)”,padding:24}}>
-<div style={{display:“flex”,justifyContent:“space-between”,alignItems:“center”,marginBottom:20}}>
-<h3 style={{color:”#f1f5f9”,fontWeight:700}}>Edit Entry</h3>
-<button onClick={onClose} style={{background:“rgba(255,255,255,0.08)”,border:“none”,color:”#94a3b8”,cursor:“pointer”,fontSize:16,width:30,height:30,borderRadius:99,display:“flex”,alignItems:“center”,justifyContent:“center”}}>✕</button>
-</div>
-<div style={{display:“flex”,flexDirection:“column”,gap:12}}>
-<Inp label="Food Name" value={name} onChange={setName} autoFocus/>
-<div style={{display:“grid”,gridTemplateColumns:“1fr 1fr”,gap:12}}>
-<Inp label="Calories" type="number" value={calories} onChange={setCalories} unit="kcal"/>
-<Inp label="Protein" type="number" value={protein} onChange={setProtein} unit="g"/>
-<Inp label="Carbs" type="number" value={carbs} onChange={setCarbs} unit="g"/>
-<Inp label="Fats" type="number" value={fats} onChange={setFats} unit="g"/>
-</div>
-<MealPicker value={meal} onChange={setMeal}/>
-<Btn style={{width:“100%”,padding:“13px”}} onClick={()=>{onSave({…entry,name,calories:+calories,protein:+protein,carbs:+carbs,fats:+fats,meal});onClose();}}>Save Changes</Btn>
-</div>
-</div>
-</div>
-);
+function foodItemHTML(e) {
+  return `<div class="food-item">
+    <div style="flex:1">
+      <div class="food-name">${e.name}</div>
+      <div class="food-macros">
+        <span class="food-kcal">${e.calories} kcal</span>
+        <span class="food-macro">P:${e.protein}g · C:${e.carbs}g · F:${e.fats}g</span>
+      </div>
+    </div>
+    <div class="food-actions">
+      <button class="btn btn-sm btn-ghost" onclick="editEntry('${e.id}')">✏️</button>
+      <button class="btn btn-sm btn-danger" onclick="deleteEntry('${e.id}')">✕</button>
+    </div>
+  </div>`;
 }
 
 // ── DASHBOARD ──
-function Dashboard({entries,goals,onOpenModal,onDeleteEntry,onEditEntry,streak}){
-const totals=entries.reduce((a,e)=>({calories:a.calories+e.calories,protein:a.protein+e.protein,carbs:a.carbs+e.carbs,fats:a.fats+e.fats}),{calories:0,protein:0,carbs:0,fats:0});
-const goalCal=goals.calories||2000;
-const goalProt=goals.protein||150;
-const remaining=goalCal-totals.calories;
-const mealGroups=MEAL_TYPES.reduce((a,m)=>{a[m]=entries.filter(e=>e.meal===m);return a;},{});
-const insights=[];
-if(totals.protein<goalProt*0.5&&entries.length>0)insights.push({icon:“⚠️”,msg:“Protein intake is low today”,color:”#fbbf24”});
-if(totals.calories>goalCal*1.1)insights.push({icon:“🔥”,msg:“You’ve exceeded your calorie goal”,color:”#f87171”});
-if(remaining>0&&totals.calories>goalCal*0.8)insights.push({icon:“✅”,msg:“Almost at your calorie goal!”,color:”#34d399”});
-if(entries.length===0)insights.push({icon:“📝”,msg:“Start logging your meals today”,color:”#a78bfa”});
+function renderDashboard() {
+  const te = todayEntries();
+  const t = totals(te);
+  const goalCal = S.goals.calories || 2000;
+  const goalProt = S.goals.protein || 150;
+  const remaining = goalCal - t.calories;
 
-return(
-<div style={{display:“flex”,flexDirection:“column”,gap:14}}>
-{streak>0&&(
-<div style={{background:“linear-gradient(135deg,rgba(249,115,22,0.2),rgba(234,88,12,0.1))”,border:“1px solid rgba(249,115,22,0.3)”,borderRadius:16,padding:“12px 18px”,display:“flex”,alignItems:“center”,gap:10}}>
-<span style={{fontSize:22}}>🔥</span>
-<div>
-<div style={{color:”#f97316”,fontWeight:700,fontSize:14}}>{streak} Day Streak!</div>
-<div style={{color:”#64748b”,fontSize:12}}>Keep logging daily</div>
-</div>
-</div>
-)}
-{/* Main Calorie Card */}
-<Card>
-<div style={{display:“flex”,alignItems:“center”,justifyContent:“space-between”,marginBottom:16}}>
-<div>
-<div style={{color:”#64748b”,fontSize:11,fontWeight:600,textTransform:“uppercase”,letterSpacing:“0.06em”}}>Today’s Calories</div>
-<div style={{display:“flex”,alignItems:“baseline”,gap:6,marginTop:4}}>
-<span style={{color:”#f97316”,fontSize:38,fontWeight:800,lineHeight:1}}>{Math.round(totals.calories)}</span>
-<span style={{color:”#475569”,fontSize:15}}>/ {goalCal} kcal</span>
-</div>
-</div>
-<div style={{background:remaining>0?“rgba(34,211,238,0.1)”:“rgba(239,68,68,0.1)”,border:`1px solid ${remaining>0?"rgba(34,211,238,0.3)":"rgba(239,68,68,0.3)"}`,borderRadius:14,padding:“10px 16px”,textAlign:“center”}}>
-<div style={{color:remaining>0?”#22d3ee”:”#f87171”,fontSize:20,fontWeight:800}}>{Math.abs(Math.round(remaining))}</div>
-<div style={{color:”#475569”,fontSize:11,fontWeight:600}}>{remaining>0?“remaining”:“over”}</div>
-</div>
-</div>
-<ProgressBar value={totals.calories} max={goalCal} color={C.calories} height={10}/>
-<div style={{display:“flex”,gap:8,marginTop:16,flexWrap:“wrap”}}>
-<MacroPill label="Protein" value={Math.round(totals.protein)} color={C.protein}/>
-<MacroPill label="Carbs" value={Math.round(totals.carbs)} color={C.carbs}/>
-<MacroPill label="Fats" value={Math.round(totals.fats)} color={C.fats}/>
-</div>
-</Card>
-{/* Protein bar */}
-<Card style={{padding:“14px 18px”}}>
-<div style={{display:“flex”,justifyContent:“space-between”,alignItems:“center”,marginBottom:10}}>
-<span style={{color:”#f1f5f9”,fontWeight:600,fontSize:14}}>Protein Goal</span>
-<span style={{color:C.protein,fontSize:13,fontWeight:700}}>{Math.round(totals.protein)}g / {goalProt}g</span>
-</div>
-<ProgressBar value={totals.protein} max={goalProt} color={C.protein} height={8}/>
-</Card>
-{/* Insights */}
-{insights.map((ins,i)=>(
-<div key={i} style={{background:`${ins.color}10`,border:`1px solid ${ins.color}25`,borderRadius:12,padding:“10px 14px”,display:“flex”,alignItems:“center”,gap:10}}>
-<span style={{fontSize:16}}>{ins.icon}</span>
-<span style={{color:ins.color,fontSize:13,fontWeight:500}}>{ins.msg}</span>
-</div>
-))}
-{/* Add Button */}
-<Btn onClick={()=>onOpenModal()} style={{width:“100%”,padding:“14px”,fontSize:15}}>＋ Add Food</Btn>
-{/* Meals */}
-{MEAL_TYPES.map(meal=>{
-const items=mealGroups[meal];
-const mc=items.reduce((s,e)=>s+e.calories,0);
-return(
-<Card key={meal}>
-<div style={{display:“flex”,justifyContent:“space-between”,alignItems:“center”,marginBottom:items.length>0?12:0}}>
-<div>
-<div style={{color:”#f1f5f9”,fontWeight:700,fontSize:15}}>{meal}</div>
-<div style={{color:”#475569”,fontSize:12,marginTop:2}}>{items.length} items{mc>0?` · ${Math.round(mc)} kcal`:””}</div>
-</div>
-<Btn small variant=“ghost” onClick={()=>onOpenModal(meal)}>+ Add</Btn>
-</div>
-{items.map(e=><FoodItem key={e.id} entry={e} onDelete={onDeleteEntry} onEdit={onEditEntry}/>)}
-</Card>
-);
-})}
-</div>
-);
+  let html = '';
+
+  // Streak
+  if (S.streak > 0) html += `<div class="streak-banner"><span style="font-size:22px">🔥</span><div><div style="color:#f97316;font-weight:700;font-size:14px">${S.streak} Day Streak!</div><div style="color:#64748b;font-size:12px">Keep logging daily</div></div></div>`;
+
+  // Calorie card
+  html += `<div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div>
+        <div style="color:#64748b;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Today's Calories</div>
+        <div style="display:flex;align-items:baseline;gap:6px;margin-top:4px">
+          <span style="color:#f97316;font-size:38px;font-weight:800;line-height:1">${Math.round(t.calories)}</span>
+          <span style="color:#475569;font-size:15px">/ ${goalCal} kcal</span>
+        </div>
+      </div>
+      <div class="${remaining>0?'deficit-card':'deficit-card over'}">
+        <div style="color:${remaining>0?'#22d3ee':'#f87171'};font-size:20px;font-weight:800">${Math.abs(Math.round(remaining))}</div>
+        <div style="color:#475569;font-size:11px;font-weight:600">${remaining>0?'remaining':'over'}</div>
+      </div>
+    </div>
+    ${progressBarHTML(t.calories, goalCal, '#f97316', 10)}
+    <div class="macro-pills">
+      ${macroPillHTML('Protein',t.protein,'#22d3ee')}
+      ${macroPillHTML('Carbs',t.carbs,'#a78bfa')}
+      ${macroPillHTML('Fats',t.fats,'#fb7185')}
+    </div>
+  </div>`;
+
+  // Protein bar
+  html += `<div class="card" style="padding:14px 18px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <span style="color:#f1f5f9;font-weight:600;font-size:14px">Protein Goal</span>
+      <span style="color:#22d3ee;font-size:13px;font-weight:700">${Math.round(t.protein)}g / ${goalProt}g</span>
+    </div>
+    ${progressBarHTML(t.protein, goalProt, '#22d3ee', 8)}
+  </div>`;
+
+  // Insights
+  if (t.protein < goalProt*0.5 && te.length > 0) html += insightHTML('⚠️','Protein intake is low today','#fbbf24');
+  if (t.calories > goalCal*1.1) html += insightHTML('🔥','You exceeded your calorie goal','#f87171');
+  if (remaining > 0 && t.calories > goalCal*0.8) html += insightHTML('✅','Almost at your calorie goal!','#34d399');
+  if (te.length === 0) html += insightHTML('📝','Start logging your meals today','#a78bfa');
+
+  // Add button
+  html += `<button class="btn btn-primary btn-block" onclick="openAddModal()" style="margin-bottom:12px">＋ Add Food</button>`;
+
+  // Meals
+  MEALS.forEach(meal => {
+    const items = te.filter(e => e.meal === meal);
+    const mc = items.reduce((s,e)=>s+e.calories,0);
+    html += `<div class="card">
+      <div class="meal-header">
+        <div>
+          <div class="meal-name">${meal}</div>
+          <div class="meal-meta">${items.length} items${mc>0?' · '+Math.round(mc)+' kcal':''}</div>
+        </div>
+        <button class="btn btn-sm btn-ghost" onclick="openAddModal('${meal}')">+ Add</button>
+      </div>
+      ${items.map(e=>foodItemHTML(e)).join('')}
+    </div>`;
+  });
+
+  return html;
+}
+
+function insightHTML(icon, msg, color) {
+  return `<div class="insight" style="background:${color}10;border:1px solid ${color}25"><span class="insight-icon">${icon}</span><span class="insight-text" style="color:${color}">${msg}</span></div>`;
 }
 
 // ── LOG TAB ──
-function LogTab({entries,onOpenModal,onDeleteEntry,onEditEntry}){
-const grouped={};
-entries.forEach(e=>{const d=new Date(e.timestamp).toISOString().split(“T”)[0];if(!grouped[d])grouped[d]=[];grouped[d].push(e);});
-const dates=Object.keys(grouped).sort((a,b)=>b.localeCompare(a));
-return(
-<div style={{display:“flex”,flexDirection:“column”,gap:14}}>
-<Btn onClick={()=>onOpenModal()} style={{width:“100%”}}>＋ Log Food</Btn>
-{dates.length===0&&(
-<Card style={{textAlign:“center”,padding:“40px 20px”}}>
-<div style={{fontSize:44}}>🍽️</div>
-<div style={{color:”#475569”,marginTop:12,fontSize:15}}>No entries yet. Start logging!</div>
-</Card>
-)}
-{dates.map(date=>{
-const dayE=grouped[date];
-const dTotal=dayE.reduce((s,e)=>s+e.calories,0);
-const label=date===today()?“Today”:new Date(date+“T12:00:00”).toLocaleDateString(“en-US”,{weekday:“long”,month:“short”,day:“numeric”});
-return(
-<Card key={date}>
-<div style={{display:“flex”,justifyContent:“space-between”,alignItems:“center”,marginBottom:10}}>
-<div style={{color:”#f1f5f9”,fontWeight:700}}>{label}</div>
-<span style={{color:C.calories,fontWeight:700}}>{Math.round(dTotal)} kcal</span>
-</div>
-{dayE.map(e=><FoodItem key={e.id} entry={e} onDelete={onDeleteEntry} onEdit={onEditEntry}/>)}
-</Card>
-);
-})}
-</div>
-);
+function renderLog() {
+  const grouped = {};
+  S.entries.forEach(e => {
+    const d = new Date(e.timestamp).toISOString().split('T')[0];
+    if (!grouped[d]) grouped[d] = [];
+    grouped[d].push(e);
+  });
+  const dates = Object.keys(grouped).sort((a,b)=>b.localeCompare(a));
+
+  let html = `<button class="btn btn-primary btn-block" onclick="openAddModal()" style="margin-bottom:12px">＋ Log Food</button>`;
+
+  if (dates.length === 0) {
+    html += `<div class="card" style="text-align:center;padding:40px 20px"><div style="font-size:44px">🍽️</div><div style="color:#475569;margin-top:12px;font-size:15px">No entries yet. Start logging!</div></div>`;
+    return html;
+  }
+
+  dates.forEach(date => {
+    const dayE = grouped[date];
+    const dTotal = dayE.reduce((s,e)=>s+e.calories,0);
+    const isToday = date === today();
+    const label = isToday ? 'Today' : new Date(date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
+    html += `<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div style="color:#f1f5f9;font-weight:700">${label}</div>
+        <span style="color:#f97316;font-weight:700">${Math.round(dTotal)} kcal</span>
+      </div>
+      ${dayE.map(e=>foodItemHTML(e)).join('')}
+    </div>`;
+  });
+
+  return html;
 }
 
 // ── SAVED TAB ──
-function SavedTab({savedFoods,onSave,onDelete,onAddToMeal}){
-const[name,setName]=useState(””);const[calories,setCalories]=useState(””);const[protein,setProtein]=useState(””);const[carbs,setCarbs]=useState(””);const[fats,setFats]=useState(””);
-const[search,setSearch]=useState(””);const[showForm,setShowForm]=useState(false);
-const submit=()=>{
-if(!name||!calories)return;
-onSave({id:genId(),name,calories:parseFloat(calories)||0,protein:parseFloat(protein)||0,carbs:parseFloat(carbs)||0,fats:parseFloat(fats)||0});
-setName(””);setCalories(””);setProtein(””);setCarbs(””);setFats(””);setShowForm(false);
-};
-const all=[…DEFAULT_FOODS,…savedFoods];
-const filtered=all.filter(f=>f.name.toLowerCase().includes(search.toLowerCase()));
-return(
-<div style={{display:“flex”,flexDirection:“column”,gap:14}}>
-<div style={{display:“flex”,gap:10}}>
-<div style={{flex:1}}><Inp value={search} onChange={setSearch} placeholder="Search foods..."/></div>
-<Btn variant={showForm?“ghost”:“primary”} onClick={()=>setShowForm(!showForm)}>{showForm?“Cancel”:“＋ Save”}</Btn>
-</div>
-{showForm&&(
-<Card>
-<div style={{color:”#f1f5f9”,fontWeight:700,marginBottom:14}}>Save New Food</div>
-<div style={{display:“flex”,flexDirection:“column”,gap:12}}>
-<Inp label="Food Name" value={name} onChange={setName} placeholder="e.g. Protein Bar" autoFocus/>
-<div style={{display:“grid”,gridTemplateColumns:“1fr 1fr”,gap:12}}>
-<Inp label="Calories" type="number" value={calories} onChange={setCalories} unit="kcal"/>
-<Inp label="Protein" type="number" value={protein} onChange={setProtein} unit="g"/>
-<Inp label="Carbs" type="number" value={carbs} onChange={setCarbs} unit="g"/>
-<Inp label="Fats" type="number" value={fats} onChange={setFats} unit="g"/>
-</div>
-<Btn onClick={submit} disabled={!name||!calories} style={{width:“100%”}}>Save Food</Btn>
-</div>
-</Card>
-)}
-<div style={{color:”#475569”,fontSize:11,fontWeight:600,letterSpacing:“0.06em”,textTransform:“uppercase”}}>{filtered.length} Foods Available</div>
-{filtered.map(food=>(
-<Card key={food.id} hover style={{padding:“14px 16px”}}>
-<div style={{display:“flex”,justifyContent:“space-between”,alignItems:“center”}}>
-<div>
-<div style={{color:”#f1f5f9”,fontWeight:600,fontSize:14}}>{food.name}</div>
-<div style={{display:“flex”,gap:8,marginTop:4,flexWrap:“wrap”}}>
-<span style={{color:C.calories,fontSize:12,fontWeight:700}}>{food.calories} kcal</span>
-<span style={{color:”#475569”,fontSize:12}}>P:{food.protein}g C:{food.carbs}g F:{food.fats}g</span>
-</div>
-</div>
-<div style={{display:“flex”,gap:6}}>
-<Btn small onClick={()=>onAddToMeal(food)}>Add</Btn>
-{!DEFAULT_FOODS.find(d=>d.id===food.id)&&<Btn small variant=“danger” onClick={()=>onDelete(food.id)}>✕</Btn>}
-</div>
-</div>
-</Card>
-))}
-</div>
-);
+function renderSaved() {
+  const allFoods = [...DEFAULT_FOODS, ...S.saved];
+  let html = `
+  <div style="display:flex;gap:10px;margin-bottom:12px">
+    <div style="flex:1"><input class="search-input" id="savedSearch" oninput="filterSaved()" placeholder="Search foods..."/></div>
+    <button class="btn btn-primary" onclick="toggleSaveForm()">＋ Save</button>
+  </div>
+  <div id="saveForm" style="display:none" class="card">
+    <div class="card-title">Save New Food</div>
+    <div class="field"><label>Food Name</label><div class="field-wrap"><input id="sf_name" type="text" placeholder="e.g. Protein Bar"/></div></div>
+    <div class="grid2">
+      <div class="field"><label>Calories</label><div class="field-wrap"><input id="sf_cal" type="number" placeholder="0"/><span class="unit">kcal</span></div></div>
+      <div class="field"><label>Protein</label><div class="field-wrap"><input id="sf_prot" type="number" placeholder="0"/><span class="unit">g</span></div></div>
+      <div class="field"><label>Carbs</label><div class="field-wrap"><input id="sf_carbs" type="number" placeholder="0"/><span class="unit">g</span></div></div>
+      <div class="field"><label>Fats</label><div class="field-wrap"><input id="sf_fats" type="number" placeholder="0"/><span class="unit">g</span></div></div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="saveNewFood()">Save Food</button>
+  </div>
+  <div style="color:#475569;font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px">${allFoods.length} Foods Available</div>
+  <div id="savedList">`;
+
+  allFoods.forEach(food => {
+    html += savedFoodHTML(food);
+  });
+
+  html += `</div>`;
+  return html;
 }
 
-// ── CALCULATOR TAB ──
-function CalcTab({goals,onUpdateGoals}){
-const[weight,setWeight]=useState(String(goals.weight||””));
-const[height,setHeight]=useState(String(goals.height||””));
-const[age,setAge]=useState(String(goals.age||””));
-const[gender,setGender]=useState(goals.gender||“male”);
-const[activity,setActivity]=useState(String(goals.activity||“1.55”));
-const[goal,setGoal]=useState(goals.goal||“loss”);
-const[result,setResult]=useState(null);
-const calc=()=>{
-if(!weight||!height||!age)return;
-const tdee=calcTDEE({weight:+weight,height:+height,age:+age,gender,activity:+activity});
-const adj={loss:-500,maintenance:0,gain:300};
-const target=tdee+adj[goal];
-const wfl=goal===“loss”?500*7/7700:goal===“gain”?-(300*7/7700):0;
-setResult({tdee,target,wfl,protein:Math.round(+weight*2)});
-onUpdateGoals({…goals,calories:target,protein:Math.round(+weight*2),weight:+weight,height:+height,age:+age,gender,activity:+activity,goal});
-};
-return(
-<div style={{display:“flex”,flexDirection:“column”,gap:16}}>
-<Card>
-<div style={{color:”#f1f5f9”,fontWeight:700,fontSize:16,marginBottom:16}}>🔢 TDEE Calculator</div>
-<div style={{display:“grid”,gridTemplateColumns:“1fr 1fr”,gap:12}}>
-<Inp label="Weight" type="number" value={weight} onChange={setWeight} unit="kg"/>
-<Inp label="Height" type="number" value={height} onChange={setHeight} unit="cm"/>
-<Inp label="Age" type="number" value={age} onChange={setAge} unit="yrs"/>
-<Sel label=“Gender” value={gender} onChange={setGender} options={[{value:“male”,label:“Male”},{value:“female”,label:“Female”}]}/>
-</div>
-<div style={{marginTop:12,display:“flex”,flexDirection:“column”,gap:12}}>
-<Sel label=“Activity Level” value={activity} onChange={setActivity} options={ACTIVITY_LEVELS.map(a=>({value:String(a.value),label:`${a.label} — ${a.desc}`}))}/>
-<Sel label=“Goal” value={goal} onChange={setGoal} options={[{value:“loss”,label:“🔥 Fat Loss (−500 kcal)”},{value:“maintenance”,label:“⚖️ Maintenance”},{value:“gain”,label:“💪 Muscle Gain (+300 kcal)”}]}/>
-</div>
-<Btn onClick={calc} variant=“orange” style={{marginTop:16,width:“100%”,padding:“13px”}}>Calculate My Goals</Btn>
-</Card>
-{result&&(
-<div style={{display:“flex”,flexDirection:“column”,gap:10}}>
-{[
-{label:“TDEE (Maintenance)”,value:`${result.tdee} kcal/day`,color:”#a78bfa”,icon:“⚡”},
-{label:“Daily Calorie Goal”,value:`${result.target} kcal/day`,color:C.calories,icon:“🎯”},
-{label:“Protein Goal”,value:`${result.protein}g/day`,color:C.protein,icon:“💪”},
-{label:goal===“loss”?“Est. Weekly Fat Loss”:goal===“gain”?“Est. Weekly Gain”:“Weekly Change”,value:goal===“maintenance”?“0 kg”:`~${Math.abs(result.wfl).toFixed(2)} kg/wk`,color:goal===“loss”?”#34d399”:C.fats,icon:goal===“loss”?“📉”:“📈”},
-].map((item,i)=>(
-<Card key={i} style={{padding:“14px 18px”}}>
-<div style={{display:“flex”,justifyContent:“space-between”,alignItems:“center”}}>
-<div style={{display:“flex”,alignItems:“center”,gap:10}}>
-<span style={{fontSize:20}}>{item.icon}</span>
-<span style={{color:”#94a3b8”,fontSize:14}}>{item.label}</span>
-</div>
-<span style={{color:item.color,fontWeight:800,fontSize:16}}>{item.value}</span>
-</div>
-</Card>
-))}
-<div style={{background:“rgba(99,102,241,0.1)”,border:“1px solid rgba(99,102,241,0.3)”,borderRadius:14,padding:“12px 16px”}}>
-<span style={{color:”#a5b4fc”,fontSize:13,fontWeight:600}}>✅ Goals saved to your dashboard!</span>
-</div>
-</div>
-)}
-</div>
-);
+function savedFoodHTML(food) {
+  const isDefault = DEFAULT_FOODS.find(d=>d.id===food.id);
+  return `<div class="saved-item">
+    <div style="flex:1">
+      <div style="color:#f1f5f9;font-weight:600;font-size:14px">${food.name}</div>
+      <div class="food-macros" style="margin-top:4px">
+        <span class="food-kcal">${food.calories} kcal</span>
+        <span class="food-macro">P:${food.protein}g C:${food.carbs}g F:${food.fats}g</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:6px">
+      <button class="btn btn-sm btn-primary" onclick="quickAddFood('${food.id}')">Add</button>
+      ${!isDefault?`<button class="btn btn-sm btn-danger" onclick="deleteSaved('${food.id}')">✕</button>`:''}
+    </div>
+  </div>`;
+}
+
+function filterSaved() {
+  const q = document.getElementById('savedSearch').value.toLowerCase();
+  const all = [...DEFAULT_FOODS, ...S.saved];
+  const filtered = all.filter(f=>f.name.toLowerCase().includes(q));
+  document.getElementById('savedList').innerHTML = filtered.map(f=>savedFoodHTML(f)).join('');
+}
+
+function toggleSaveForm() {
+  const f = document.getElementById('saveForm');
+  if(f) f.style.display = f.style.display==='none' ? 'block' : 'none';
+}
+
+function saveNewFood() {
+  const name = document.getElementById('sf_name').value;
+  const cal = document.getElementById('sf_cal').value;
+  if(!name||!cal) return;
+  const food = {id:genId(),name,calories:parseFloat(cal)||0,protein:parseFloat(document.getElementById('sf_prot').value)||0,carbs:parseFloat(document.getElementById('sf_carbs').value)||0,fats:parseFloat(document.getElementById('sf_fats').value)||0};
+  S.saved.push(food);
+  persist();
+  render();
+}
+
+function quickAddFood(id) {
+  const all = [...DEFAULT_FOODS, ...S.saved];
+  const food = all.find(f=>f.id===id);
+  if(!food) return;
+  S.entries.push({...food, id:genId(), meal:'Snacks', timestamp:Date.now()});
+  persist();
+  updateStreak();
+  switchTab('dashboard', document.getElementById('tab-dashboard'));
+}
+
+function deleteSaved(id) {
+  S.saved = S.saved.filter(f=>f.id!==id);
+  persist();
+  render();
+}
+
+// ── CALC TAB ──
+function renderCalc() {
+  const g = S.goals;
+  return `<div class="card">
+    <div class="card-title">🔢 TDEE Calculator</div>
+    <div class="grid2">
+      <div class="field"><label>Weight</label><div class="field-wrap"><input id="c_weight" type="number" value="${g.weight||''}" placeholder="70"/><span class="unit">kg</span></div></div>
+      <div class="field"><label>Height</label><div class="field-wrap"><input id="c_height" type="number" value="${g.height||''}" placeholder="175"/><span class="unit">cm</span></div></div>
+      <div class="field"><label>Age</label><div class="field-wrap"><input id="c_age" type="number" value="${g.age||''}" placeholder="25"/><span class="unit">yrs</span></div></div>
+      <div class="field"><label>Gender</label><div class="field-wrap"><select id="c_gender"><option value="male" ${g.gender==='male'?'selected':''}>Male</option><option value="female" ${g.gender==='female'?'selected':''}>Female</option></select></div></div>
+    </div>
+    <div class="field"><label>Activity Level</label><div class="field-wrap"><select id="c_activity">
+      <option value="1.2" ${g.activity==1.2?'selected':''}>Sedentary — Little/no exercise</option>
+      <option value="1.375" ${g.activity==1.375?'selected':''}>Light — 1–3 days/week</option>
+      <option value="1.55" ${!g.activity||g.activity==1.55?'selected':''}>Moderate — 3–5 days/week</option>
+      <option value="1.725" ${g.activity==1.725?'selected':''}>Active — 6–7 days/week</option>
+      <option value="1.9" ${g.activity==1.9?'selected':''}>Very Active — Hard daily exercise</option>
+    </select></div></div>
+    <div class="field"><label>Goal</label><div class="field-wrap"><select id="c_goal">
+      <option value="loss" ${g.goal==='loss'||!g.goal?'selected':''}>🔥 Fat Loss (−500 kcal)</option>
+      <option value="maintenance" ${g.goal==='maintenance'?'selected':''}>⚖️ Maintenance</option>
+      <option value="gain" ${g.goal==='gain'?'selected':''}>💪 Muscle Gain (+300 kcal)</option>
+    </select></div></div>
+    <button class="btn btn-orange btn-block" onclick="runCalc()">Calculate My Goals</button>
+  </div>
+  <div id="calcResults"></div>`;
+}
+
+function runCalc() {
+  const w=parseFloat(document.getElementById('c_weight').value);
+  const h=parseFloat(document.getElementById('c_height').value);
+  const a=parseFloat(document.getElementById('c_age').value);
+  const gender=document.getElementById('c_gender').value;
+  const activity=parseFloat(document.getElementById('c_activity').value);
+  const goal=document.getElementById('c_goal').value;
+  if(!w||!h||!a) return;
+  const bmr = gender==='male' ? 10*w+6.25*h-5*a+5 : 10*w+6.25*h-5*a-161;
+  const tdee = Math.round(bmr*activity);
+  const adj = {loss:-500,maintenance:0,gain:300};
+  const target = tdee + adj[goal];
+  const protein = Math.round(w*2);
+  const fatLoss = goal==='loss' ? (500*7/7700).toFixed(2) : goal==='gain' ? (300*7/7700).toFixed(2) : '0';
+
+  S.goals = {...S.goals, calories:target, protein, weight:w, height:h, age:a, gender, activity, goal};
+  persist();
+  updateStreakUI();
+
+  const results = [
+    {icon:'⚡',label:'TDEE (Maintenance)',value:`${tdee} kcal/day`,color:'#a78bfa'},
+    {icon:'🎯',label:'Daily Calorie Goal',value:`${target} kcal/day`,color:'#f97316'},
+    {icon:'💪',label:'Protein Goal',value:`${protein}g/day`,color:'#22d3ee'},
+    {icon:goal==='loss'?'📉':'📈',label:goal==='loss'?'Est. Weekly Fat Loss':goal==='gain'?'Est. Weekly Gain':'Weekly Change',value:goal==='maintenance'?'0 kg':`~${fatLoss} kg/week`,color:goal==='loss'?'#34d399':'#fb7185'},
+  ];
+
+  let html = results.map(r=>`<div class="card" style="padding:14px 18px;margin-bottom:10px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:20px">${r.icon}</span>
+        <span style="color:#94a3b8;font-size:14px">${r.label}</span>
+      </div>
+      <span style="color:${r.color};font-weight:800;font-size:16px">${r.value}</span>
+    </div>
+  </div>`).join('');
+
+  html += `<div style="background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.3);border-radius:14px;padding:12px 16px;margin-bottom:12px"><span style="color:#a5b4fc;font-size:13px;font-weight:600">✅ Goals saved to your dashboard!</span></div>`;
+
+  document.getElementById('calcResults').innerHTML = html;
 }
 
 // ── ANALYTICS TAB ──
-function AnalyticsTab({allEntries,goals}){
-const goalCal=goals.calories||2000;
-const days=Array.from({length:7},(_,i)=>{
-const d=new Date();d.setDate(d.getDate()-(6-i));
-const ds=d.toISOString().split(“T”)[0];
-const de=allEntries.filter(e=>new Date(e.timestamp).toISOString().split(“T”)[0]===ds);
-const cal=Math.round(de.reduce((s,e)=>s+e.calories,0));
-const prot=Math.round(de.reduce((s,e)=>s+e.protein,0));
-return{date:ds,label:d.toLocaleDateString(“en-US”,{weekday:“short”}),calories:cal,protein:prot,hasData:de.length>0};
-});
-const maxCal=Math.max(…days.map(d=>d.calories),goalCal,1);
-const withData=days.filter(d=>d.hasData);
-const avg=Math.round(withData.reduce((s,d)=>s+d.calories,0)/(withData.length||1));
-const avgProt=Math.round(withData.reduce((s,d)=>s+d.protein,0)/(withData.length||1));
-const deficitDays=days.filter(d=>d.hasData&&d.calories<goalCal).length;
-const insights=[];
-if(deficitDays>=5)insights.push({icon:“🔥”,msg:“You’re in a consistent calorie deficit!”,color:”#34d399”});
-if(avgProt<(goals.protein||150)*0.7&&withData.length>0)insights.push({icon:“⚠️”,msg:“Average protein is low this week”,color:”#fbbf24”});
-if(avg<goalCal*0.8&&avg>0)insights.push({icon:“💪”,msg:“Great calorie control this week!”,color:”#22d3ee”});
-return(
-<div style={{display:“flex”,flexDirection:“column”,gap:14}}>
-<div style={{display:“grid”,gridTemplateColumns:“1fr 1fr”,gap:12}}>
-{[
-{label:“Avg Calories”,value:`${avg}`,unit:“kcal”,color:C.calories},
-{label:“Avg Protein”,value:`${avgProt}`,unit:“g”,color:C.protein},
-{label:“Deficit Days”,value:`${deficitDays}`,unit:”/7”,color:”#34d399”},
-{label:“Calorie Goal”,value:`${goalCal}`,unit:“kcal”,color:”#a78bfa”},
-].map((s,i)=>(
-<Card key={i} style={{padding:“14px 16px”}}>
-<div style={{color:”#64748b”,fontSize:10,fontWeight:600,textTransform:“uppercase”,letterSpacing:“0.06em”}}>{s.label}</div>
-<div style={{marginTop:6,display:“flex”,alignItems:“baseline”,gap:3}}>
-<span style={{color:s.color,fontSize:24,fontWeight:800}}>{s.value}</span>
-<span style={{color:”#475569”,fontSize:12}}>{s.unit}</span>
-</div>
-</Card>
-))}
-</div>
-{/* Bar Chart */}
-<Card>
-<div style={{color:”#f1f5f9”,fontWeight:700,marginBottom:16}}>7-Day Calories</div>
-<div style={{display:“flex”,gap:6,alignItems:“flex-end”,height:130}}>
-{days.map(day=>{
-const h=day.calories>0?(day.calories/maxCal)*110:4;
-const isT=day.date===today();
-const over=day.calories>goalCal;
-return(
-<div key={day.date} style={{flex:1,display:“flex”,flexDirection:“column”,alignItems:“center”,gap:5}}>
-<div style={{fontSize:10,color:C.calories,fontWeight:700,height:14,display:“flex”,alignItems:“center”}}>{day.calories>0?day.calories:””}</div>
-<div style={{width:“100%”,height:`${h}px`,background:day.calories===0?“rgba(30,41,59,0.4)”:over?“linear-gradient(to top,#ef4444,#f97316)”:`linear-gradient(to top,${isT?"#6366f1":"#f97316"}cc,${isT?"#a78bfa":"#f97316"})`,borderRadius:“5px 5px 0 0”,transition:“height 0.5s ease”,boxShadow:day.calories>0?`0 0 10px ${over?"#ef4444":"#f97316"}44`:“none”,minHeight:4}}/>
-<div style={{fontSize:11,color:isT?”#a5b4fc”:”#475569”,fontWeight:isT?700:400}}>{day.label}</div>
-</div>
-);
-})}
-</div>
-<div style={{marginTop:12,display:“flex”,alignItems:“center”,gap:8}}>
-<div style={{width:16,height:2,background:”#a78bfa”,borderRadius:99}}/>
-<span style={{color:”#64748b”,fontSize:11}}>Goal: {goalCal} kcal</span>
-<div style={{width:12,height:12,background:“linear-gradient(135deg,#6366f1,#a78bfa)”,borderRadius:3,marginLeft:8}}/>
-<span style={{color:”#64748b”,fontSize:11}}>Today</span>
-</div>
-</Card>
-{insights.length>0&&(
-<Card>
-<div style={{color:”#f1f5f9”,fontWeight:700,marginBottom:12}}>Weekly Insights</div>
-<div style={{display:“flex”,flexDirection:“column”,gap:8}}>
-{insights.map((ins,i)=>(
-<div key={i} style={{background:`${ins.color}12`,border:`1px solid ${ins.color}25`,borderRadius:10,padding:“10px 14px”,display:“flex”,gap:10,alignItems:“center”}}>
-<span style={{fontSize:16}}>{ins.icon}</span>
-<span style={{color:ins.color,fontSize:13,fontWeight:500}}>{ins.msg}</span>
-</div>
-))}
-</div>
-</Card>
-)}
-{withData.length===0&&(
-<Card style={{textAlign:“center”,padding:“30px 20px”}}>
-<div style={{fontSize:36}}>📊</div>
-<div style={{color:”#475569”,marginTop:10,fontSize:14}}>Log meals to see your analytics</div>
-</Card>
-)}
-</div>
-);
+function renderAnalytics() {
+  const goalCal = S.goals.calories || 2000;
+  const days = Array.from({length:7},(_,i)=>{
+    const d = new Date(); d.setDate(d.getDate()-(6-i));
+    const ds = d.toISOString().split('T')[0];
+    const de = S.entries.filter(e=>new Date(e.timestamp).toISOString().split('T')[0]===ds);
+    return {date:ds,label:d.toLocaleDateString('en-US',{weekday:'short'}),calories:Math.round(de.reduce((s,e)=>s+e.calories,0)),protein:Math.round(de.reduce((s,e)=>s+e.protein,0)),hasData:de.length>0};
+  });
+
+  const withData = days.filter(d=>d.hasData);
+  const avg = Math.round(withData.reduce((s,d)=>s+d.calories,0)/(withData.length||1));
+  const avgProt = Math.round(withData.reduce((s,d)=>s+d.protein,0)/(withData.length||1));
+  const defDays = days.filter(d=>d.hasData&&d.calories<goalCal).length;
+  const maxCal = Math.max(...days.map(d=>d.calories), goalCal, 1);
+
+  let html = `<div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">Avg Calories</div><div class="stat-value" style="color:#f97316">${avg}<span class="stat-unit"> kcal</span></div></div>
+    <div class="stat-card"><div class="stat-label">Avg Protein</div><div class="stat-value" style="color:#22d3ee">${avgProt}<span class="stat-unit"> g</span></div></div>
+    <div class="stat-card"><div class="stat-label">Deficit Days</div><div class="stat-value" style="color:#34d399">${defDays}<span class="stat-unit">/7</span></div></div>
+    <div class="stat-card"><div class="stat-label">Calorie Goal</div><div class="stat-value" style="color:#a78bfa">${goalCal}<span class="stat-unit"> kcal</span></div></div>
+  </div>`;
+
+  // Bar chart
+  html += `<div class="card"><div class="card-title">7-Day Calories</div><div class="bar-chart">`;
+  days.forEach(day => {
+    const h = day.calories > 0 ? (day.calories/maxCal)*110 : 4;
+    const isT = day.date === today();
+    const over = day.calories > goalCal;
+    const bg = day.calories===0?'rgba(30,41,59,0.4)':over?'linear-gradient(to top,#ef4444,#f97316)':isT?'linear-gradient(to top,#6366f1cc,#a78bfa)':'linear-gradient(to top,#f97316cc,#f97316)';
+    html += `<div class="bar-col">
+      <div class="bar-val">${day.calories>0?day.calories:''}</div>
+      <div class="bar" style="height:${h}px;background:${bg};box-shadow:${day.calories>0?`0 0 10px ${over?'#ef4444':'#f97316'}44`:'none'}"></div>
+      <div class="bar-day ${isT?'today':''}">${day.label}</div>
+    </div>`;
+  });
+  html += `</div>
+    <div style="margin-top:12px;display:flex;align-items:center;gap:8px">
+      <div style="width:16px;height:2px;background:#a78bfa;border-radius:99px"></div>
+      <span style="color:#64748b;font-size:11px">Goal: ${goalCal} kcal</span>
+    </div>
+  </div>`;
+
+  // Insights
+  let insights = '';
+  if(defDays>=5) insights += insightHTML('🔥',"You're in a consistent calorie deficit!",'#34d399');
+  if(avgProt<(S.goals.protein||150)*0.7&&withData.length>0) insights += insightHTML('⚠️','Average protein is low this week','#fbbf24');
+  if(avg<goalCal*0.8&&avg>0) insights += insightHTML('💪','Great calorie control this week!','#22d3ee');
+  if(insights) html += `<div class="card"><div class="card-title">Weekly Insights</div>${insights}</div>`;
+
+  if(!withData.length) html += `<div class="card" style="text-align:center;padding:30px 20px"><div style="font-size:36px">📊</div><div style="color:#475569;margin-top:10px;font-size:14px">Log meals to see your analytics</div></div>`;
+
+  return html;
 }
 
 // ── GOALS TAB ──
-function GoalsTab({goals,onUpdateGoals,allEntries}){
-const[wInput,setWInput]=useState(””);
-const[calG,setCalG]=useState(String(goals.calories||2000));
-const[protG,setProtG]=useState(String(goals.protein||150));
-const wLog=goals.weightLog||[];
-const addWeight=()=>{
-if(!wInput)return;
-const updated=[…wLog,{date:today(),weight:parseFloat(wInput)}];
-onUpdateGoals({…goals,weightLog:updated,weight:parseFloat(wInput)});
-setWInput(””);
-};
-const latestW=wLog.length>0?wLog[wLog.length-1].weight:null;
-const firstW=wLog.length>1?wLog[0].weight:null;
-const wChange=latestW&&firstW?(latestW-firstW).toFixed(1):null;
-const weekE=allEntries.filter(e=>(Date.now()-e.timestamp)<7*24*3600*1000);
-const weekCals=weekE.reduce((s,e)=>s+e.calories,0);
-const weekDef=Math.max(0,(goals.calories||2000)*7-weekCals);
-const estFat=(weekDef/7700).toFixed(2);
-return(
-<div style={{display:“flex”,flexDirection:“column”,gap:16}}>
-<Card>
-<div style={{color:”#f1f5f9”,fontWeight:700,fontSize:16,marginBottom:16}}>⚖️ Weight Tracker</div>
-{latestW&&(
-<div style={{marginBottom:16,display:“flex”,alignItems:“baseline”,gap:8}}>
-<span style={{color:”#22d3ee”,fontSize:36,fontWeight:800}}>{latestW}</span>
-<span style={{color:”#475569”,fontSize:16}}>kg</span>
-{wChange!==null&&<span style={{fontSize:14,fontWeight:700,color:parseFloat(wChange)<0?”#34d399”:parseFloat(wChange)>0?”#f87171”:”#64748b”}}>{parseFloat(wChange)>0?”+”:””}{wChange} kg</span>}
-</div>
-)}
-<div style={{display:“flex”,gap:10}}>
-<div style={{flex:1}}><Inp type="number" value={wInput} onChange={setWInput} placeholder="Today's weight" unit="kg"/></div>
-<Btn onClick={addWeight} disabled={!wInput}>Log</Btn>
-</div>
-{wLog.length>0&&(
-<div style={{marginTop:14,display:“flex”,flexDirection:“column”,gap:0}}>
-{[…wLog].reverse().slice(0,7).map((e,i)=>(
-<div key={i} style={{display:“flex”,justifyContent:“space-between”,padding:“9px 0”,borderBottom:“1px solid rgba(255,255,255,0.05)”}}>
-<span style={{color:”#64748b”,fontSize:13}}>{e.date===today()?“Today”:e.date}</span>
-<span style={{color:”#22d3ee”,fontWeight:700,fontSize:13}}>{e.weight} kg</span>
-</div>
-))}
-</div>
-)}
-</Card>
-<Card style={{padding:“16px 20px”}}>
-<div style={{color:”#f1f5f9”,fontWeight:700,marginBottom:14}}>📉 This Week’s Estimate</div>
-<div style={{display:“flex”,justifyContent:“space-between”,alignItems:“center”}}>
-<div>
-<div style={{color:”#64748b”,fontSize:12}}>Weekly deficit</div>
-<div style={{color:”#34d399”,fontSize:26,fontWeight:800,marginTop:4}}>{Math.round(weekDef)} kcal</div>
-</div>
-<div style={{textAlign:“right”}}>
-<div style={{color:”#64748b”,fontSize:12}}>Est. fat loss</div>
-<div style={{color:C.calories,fontSize:26,fontWeight:800,marginTop:4}}>{estFat} kg</div>
-</div>
-</div>
-</Card>
-<Card>
-<div style={{color:”#f1f5f9”,fontWeight:700,fontSize:16,marginBottom:16}}>🎯 Daily Goals</div>
-<div style={{display:“flex”,flexDirection:“column”,gap:12}}>
-<Inp label="Daily Calorie Goal" type="number" value={calG} onChange={setCalG} unit="kcal"/>
-<Inp label="Daily Protein Goal" type="number" value={protG} onChange={setProtG} unit="g"/>
-<Btn variant=“success” style={{width:“100%”}} onClick={()=>onUpdateGoals({…goals,calories:parseInt(calG)||2000,protein:parseInt(protG)||150})}>Save Goals</Btn>
-</div>
-</Card>
-</div>
-);
-}
+function renderGoals() {
+  const wLog = S.goals.weightLog || [];
+  const latestW = wLog.length>0?wLog[wLog.length-1].weight:null;
+  const firstW = wLog.length>1?wLog[0].weight:null;
+  const wChange = latestW&&firstW?(latestW-firstW).toFixed(1):null;
+  const weekE = S.entries.filter(e=>(Date.now()-e.timestamp)<7*24*3600*1000);
+  const weekCals = weekE.reduce((s,e)=>s+e.calories,0);
+  const weekDef = Math.max(0,(S.goals.calories||2000)*7-weekCals);
+  const estFat = (weekDef/7700).toFixed(2);
 
-// ── ROOT APP ──
-function App(){
-const[tab,setTab]=useState(“Dashboard”);
-const[allEntries,setAllEntries]=useState(()=>store.get(“ft_entries”,[]) );
-const[savedFoods,setSavedFoods]=useState(()=>store.get(“ft_saved”,[]));
-const[goals,setGoals]=useState(()=>store.get(“ft_goals”,{calories:2000,protein:150}));
-const[modal,setModal]=useState(null);
-const[streak,setStreak]=useState(()=>store.get(“ft_streak”,0));
-
-const todayE=allEntries.filter(e=>new Date(e.timestamp).toISOString().split(“T”)[0]===today());
-
-useEffect(()=>store.set(“ft_entries”,allEntries),[allEntries]);
-useEffect(()=>store.set(“ft_saved”,savedFoods),[savedFoods]);
-useEffect(()=>store.set(“ft_goals”,goals),[goals]);
-
-useEffect(()=>{
-if(todayE.length>0){
-const last=store.get(“ft_lastDate”,null);
-const t=today();
-if(last!==t){
-const yd=new Date();yd.setDate(yd.getDate()-1);
-const yds=yd.toISOString().split(“T”)[0];
-const ns=last===yds?streak+1:1;
-setStreak(ns);store.set(“ft_streak”,ns);store.set(“ft_lastDate”,t);
-}
-}
-},[todayE.length]);
-
-const addEntry=useCallback(e=>setAllEntries(p=>[…p,e]),[]);
-const deleteEntry=useCallback(id=>setAllEntries(p=>p.filter(e=>e.id!==id)),[]);
-const editEntry=useCallback(u=>setAllEntries(p=>p.map(e=>e.id===u.id?u:e)),[]);
-const saveFood=useCallback(f=>setSavedFoods(p=>[…p,f]),[]);
-const deleteFood=useCallback(id=>setSavedFoods(p=>p.filter(f=>f.id!==id)),[]);
-
-return(
-<div style={{minHeight:“100vh”,background:“radial-gradient(ellipse at 20% 0%,#1e1b4b 0%,transparent 50%),radial-gradient(ellipse at 80% 100%,#0c1a2e 0%,transparent 50%),#020617”,paddingBottom:80}}>
-{/* Header */}
-<div style={{position:“sticky”,top:0,zIndex:100,background:“rgba(2,6,23,0.85)”,backdropFilter:“blur(20px)”,WebkitBackdropFilter:“blur(20px)”,borderBottom:“1px solid rgba(255,255,255,0.06)”,padding:“12px 18px”,display:“flex”,alignItems:“center”,justifyContent:“space-between”}}>
-<div>
-<div style={{fontWeight:800,fontSize:20,letterSpacing:”-0.03em”}}>
-<span style={{background:“linear-gradient(135deg,#6366f1,#a78bfa)”,WebkitBackgroundClip:“text”,WebkitTextFillColor:“transparent”}}>Fuel</span>
-<span style={{color:”#f1f5f9”}}>Track</span>
-</div>
-<div style={{color:”#334155”,fontSize:11,fontWeight:500}}>
-{new Date().toLocaleDateString(“en-US”,{weekday:“long”,month:“short”,day:“numeric”})}
-</div>
-</div>
-<div style={{display:“flex”,alignItems:“center”,gap:10}}>
-{streak>0&&(
-<div style={{background:“rgba(249,115,22,0.15)”,border:“1px solid rgba(249,115,22,0.3)”,borderRadius:99,padding:“4px 10px”,display:“flex”,alignItems:“center”,gap:4}}>
-<span style={{fontSize:12}}>🔥</span>
-<span style={{color:”#f97316”,fontSize:12,fontWeight:700}}>{streak}</span>
-</div>
-)}
-<button onClick={()=>setModal({type:“add”})}
-style={{background:“linear-gradient(135deg,#6366f1,#8b5cf6)”,border:“none”,borderRadius:12,width:38,height:38,color:“white”,fontSize:22,cursor:“pointer”,display:“flex”,alignItems:“center”,justifyContent:“center”,boxShadow:“0 4px 14px rgba(99,102,241,0.5)”,fontWeight:300,lineHeight:1}}>
-+
-</button>
-</div>
-</div>
-
-```
-  {/* Content */}
-  <div style={{maxWidth:540,margin:"0 auto",padding:"16px 14px 0"}}>
-    {tab==="Dashboard"&&<Dashboard entries={todayE} goals={goals} onOpenModal={m=>setModal({type:"add",meal:m})} onDeleteEntry={deleteEntry} onEditEntry={e=>setModal({type:"edit",entry:e})} streak={streak}/>}
-    {tab==="Log"&&<LogTab entries={allEntries} onOpenModal={m=>setModal({type:"add",meal:m})} onDeleteEntry={deleteEntry} onEditEntry={e=>setModal({type:"edit",entry:e})}/>}
-    {tab==="Saved"&&<SavedTab savedFoods={savedFoods} onSave={saveFood} onDelete={deleteFood} onAddToMeal={food=>{addEntry({...food,id:genId(),meal:"Snacks",timestamp:Date.now()});setTab("Dashboard");}}/>}
-    {tab==="Calc"&&<CalcTab goals={goals} onUpdateGoals={setGoals}/>}
-    {tab==="Analytics"&&<AnalyticsTab allEntries={allEntries} goals={goals}/>}
-    {tab==="Goals"&&<GoalsTab goals={goals} onUpdateGoals={setGoals} allEntries={allEntries}/>}
+  let html = `<div class="card">
+    <div class="card-title">⚖️ Weight Tracker</div>
+    ${latestW?`<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:16px">
+      <span style="color:#22d3ee;font-size:36px;font-weight:800">${latestW}</span>
+      <span style="color:#475569;font-size:16px">kg</span>
+      ${wChange!==null?`<span style="font-size:14px;font-weight:700;color:${parseFloat(wChange)<0?'#34d399':parseFloat(wChange)>0?'#f87171':'#64748b'}">${parseFloat(wChange)>0?'+':''}${wChange} kg</span>`:''}
+    </div>`:''}
+    <div style="display:flex;gap:10px;margin-bottom:${wLog.length>0?16:0}px">
+      <div style="flex:1"><div class="field"><div class="field-wrap"><input id="w_input" type="number" placeholder="Today's weight" style="background:rgba(30,41,59,0.8);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:10px 40px 10px 14px;color:#f1f5f9;font-size:15px;outline:none;width:100%;font-family:inherit"/><span class="unit">kg</span></div></div></div>
+      <button class="btn btn-primary" onclick="logWeight()">Log</button>
+    </div>
+    ${wLog.length>0?[...wLog].reverse().slice(0,7).map(e=>`<div class="weight-row"><span style="color:#64748b;font-size:13px">${e.date===today()?'Today':e.date}</span><span style="color:#22d3ee;font-weight:700;font-size:13px">${e.weight} kg</span></div>`).join(''):''}
   </div>
 
-  {/* Bottom Nav */}
-  <div style={{position:"fixed",bottom:0,left:0,right:0,zIndex:100,background:"rgba(2,6,23,0.94)",backdropFilter:"blur(20px)",WebkitBackdropFilter:"blur(20px)",borderTop:"1px solid rgba(255,255,255,0.06)",padding:"8px 0 max(12px, env(safe-area-inset-bottom))",display:"flex",justifyContent:"space-around"}}>
-    {TABS.map(t=>{
-      const active=tab===t;
-      return(
-        <button key={t} onClick={()=>setTab(t)}
-          style={{flex:1,background:"none",border:"none",display:"flex",flexDirection:"column",alignItems:"center",gap:3,cursor:"pointer",padding:"5px 2px",position:"relative"}}>
-          {active&&<div style={{position:"absolute",top:-8,left:"50%",transform:"translateX(-50%)",width:20,height:3,background:"linear-gradient(90deg,#6366f1,#a78bfa)",borderRadius:99}}/>}
-          <span style={{fontSize:17,filter:active?"none":"grayscale(1) opacity(0.45)",transition:"filter 0.2s"}}>{TAB_ICONS[t]}</span>
-          <span style={{fontSize:10,fontWeight:active?700:500,color:active?"#a5b4fc":"#334155",transition:"color 0.2s"}}>{t}</span>
-        </button>
-      );
-    })}
+  <div class="card" style="padding:16px 20px">
+    <div class="card-title">📉 This Week's Estimate</div>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div><div style="color:#64748b;font-size:12px">Weekly deficit</div><div style="color:#34d399;font-size:26px;font-weight:800;margin-top:4px">${Math.round(weekDef)} kcal</div></div>
+      <div style="text-align:right"><div style="color:#64748b;font-size:12px">Est. fat loss</div><div style="color:#f97316;font-size:26px;font-weight:800;margin-top:4px">${estFat} kg</div></div>
+    </div>
   </div>
 
-  {/* Modals */}
-  {modal?.type==="add"&&<AddModal onClose={()=>setModal(null)} onAdd={addEntry} savedFoods={savedFoods} mealType={modal.meal}/>}
-  {modal?.type==="edit"&&<EditModal entry={modal.entry} onClose={()=>setModal(null)} onSave={editEntry}/>}
-</div>
-```
+  <div class="card">
+    <div class="card-title">🎯 Daily Goals</div>
+    <div class="field"><label>Daily Calorie Goal</label><div class="field-wrap"><input id="g_cal" type="number" value="${S.goals.calories||2000}"/><span class="unit">kcal</span></div></div>
+    <div class="field"><label>Daily Protein Goal</label><div class="field-wrap"><input id="g_prot" type="number" value="${S.goals.protein||150}"/><span class="unit">g</span></div></div>
+    <button class="btn btn-success btn-block" onclick="saveGoals()">Save Goals</button>
+  </div>`;
 
-);
+  return html;
 }
 
-ReactDOM.createRoot(document.getElementById(“root”)).render(<App/>);
+function logWeight() {
+  const v = parseFloat(document.getElementById('w_input').value);
+  if(!v) return;
+  if(!S.goals.weightLog) S.goals.weightLog = [];
+  S.goals.weightLog.push({date:today(), weight:v});
+  S.goals.weight = v;
+  persist();
+  render();
+}
+
+function saveGoals() {
+  S.goals.calories = parseInt(document.getElementById('g_cal').value)||2000;
+  S.goals.protein = parseInt(document.getElementById('g_prot').value)||150;
+  persist();
+  const btn = event.target;
+  btn.textContent = '✅ Saved!';
+  setTimeout(()=>btn.textContent='Save Goals', 1500);
+}
+
+// ── ADD MODAL ──
+let modalMode = 'manual';
+let modalMeal = 'Breakfast';
+
+function openAddModal(meal) {
+  modalMeal = meal || 'Breakfast';
+  modalMode = 'manual';
+  renderModal();
+}
+
+function renderModal() {
+  const allFoods = [...DEFAULT_FOODS, ...S.saved];
+  const search = document.getElementById('modal_search') ? document.getElementById('modal_search').value : '';
+  const filtered = search ? allFoods.filter(f=>f.name.toLowerCase().includes(search.toLowerCase())) : allFoods;
+
+  const mealPills = MEALS.map(m=>`<button class="meal-pill ${modalMeal===m?'active':''}" onclick="setModalMeal('${m}')">${m}</button>`).join('');
+
+  let body = '';
+  if(modalMode==='manual') {
+    body = `
+    <div class="field"><label>Food Name</label><div class="field-wrap"><input id="m_name" type="text" placeholder="e.g. Chicken Breast" autofocus/></div></div>
+    <div class="grid2">
+      <div class="field"><label>Calories</label><div class="field-wrap"><input id="m_cal" type="number" placeholder="0"/><span class="unit">kcal</span></div></div>
+      <div class="field"><label>Protein</label><div class="field-wrap"><input id="m_prot" type="number" placeholder="0"/><span class="unit">g</span></div></div>
+      <div class="field"><label>Carbs</label><div class="field-wrap"><input id="m_carbs" type="number" placeholder="0"/><span class="unit">g</span></div></div>
+      <div class="field"><label>Fats</label><div class="field-wrap"><input id="m_fats" type="number" placeholder="0"/><span class="unit">g</span></div></div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="submitAdd()">Add to ${modalMeal}</button>`;
+  } else {
+    const items = filtered.map(food=>`<div class="saved-item">
+      <div style="flex:1">
+        <div style="color:#f1f5f9;font-weight:600;font-size:14px">${food.name}</div>
+        <div class="food-macros" style="margin-top:4px">
+          <span class="food-kcal">${food.calories} kcal</span>
+          <span class="food-macro">P:${food.protein}g C:${food.carbs}g F:${food.fats}g</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-sm btn-ghost" onclick="fillForm('${food.id}')">Edit</button>
+        <button class="btn btn-sm btn-primary" onclick="quickAddModal('${food.id}')">Add</button>
+      </div>
+    </div>`).join('');
+    body = `<input class="search-input" id="modal_search" placeholder="Search foods..." oninput="renderModal()" style="margin-bottom:10px"/>
+    <div style="max-height:300px;overflow-y:auto">${items || '<div style="text-align:center;color:#475569;padding:20px">No foods found</div>'}</div>`;
+  }
+
+  document.getElementById('modalContainer').innerHTML = `
+  <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+      <div class="modal-handle"><div class="modal-handle-bar"></div></div>
+      <div class="modal-header">
+        <span class="modal-title">Add Food</span>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="mode-toggle">
+          <button class="mode-btn ${modalMode==='manual'?'active':''}" onclick="setModalMode('manual')">✏️ Manual Entry</button>
+          <button class="mode-btn ${modalMode==='saved'?'active':''}" onclick="setModalMode('saved')">⚡ Quick Add</button>
+        </div>
+        <div class="meal-pills">${mealPills}</div>
+        ${body}
+      </div>
+    </div>
+  </div>`;
+
+  if(modalMode==='manual') {
+    setTimeout(()=>{ const n=document.getElementById('m_name'); if(n) n.focus(); },100);
+  }
+}
+
+function setModalMode(mode) { modalMode = mode; renderModal(); }
+function setModalMeal(meal) { modalMeal = meal; renderModal(); }
+function closeModal() { document.getElementById('modalContainer').innerHTML = ''; }
+
+function submitAdd() {
+  const name = document.getElementById('m_name').value;
+  const cal = document.getElementById('m_cal').value;
+  if(!name||!cal) return;
+  S.entries.push({id:genId(),name,calories:parseFloat(cal)||0,protein:parseFloat(document.getElementById('m_prot').value)||0,carbs:parseFloat(document.getElementById('m_carbs').value)||0,fats:parseFloat(document.getElementById('m_fats').value)||0,meal:modalMeal,timestamp:Date.now()});
+  persist();
+  updateStreak();
+  updateStreakUI();
+  closeModal();
+  render();
+}
+
+function fillForm(id) {
+  const all = [...DEFAULT_FOODS,...S.saved];
+  const food = all.find(f=>f.id===id);
+  if(!food) return;
+  modalMode = 'manual';
+  renderModal();
+  setTimeout(()=>{
+    document.getElementById('m_name').value = food.name;
+    document.getElementById('m_cal').value = food.calories;
+    document.getElementById('m_prot').value = food.protein;
+    document.getElementById('m_carbs').value = food.carbs;
+    document.getElementById('m_fats').value = food.fats;
+  },50);
+}
+
+function quickAddModal(id) {
+  const all = [...DEFAULT_FOODS,...S.saved];
+  const food = all.find(f=>f.id===id);
+  if(!food) return;
+  S.entries.push({...food,id:genId(),meal:modalMeal,timestamp:Date.now()});
+  persist();
+  updateStreak();
+  updateStreakUI();
+  closeModal();
+  render();
+}
+
+// ── EDIT ENTRY ──
+function editEntry(id) {
+  const e = S.entries.find(x=>x.id===id);
+  if(!e) return;
+  const mealPills = MEALS.map(m=>`<button class="meal-pill ${e.meal===m?'active':''}" onclick="setEditMeal(this,'${m}')">${m}</button>`).join('');
+  document.getElementById('modalContainer').innerHTML = `
+  <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+      <div class="modal-handle"><div class="modal-handle-bar"></div></div>
+      <div class="modal-header">
+        <span class="modal-title">Edit Entry</span>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="field"><label>Food Name</label><div class="field-wrap"><input id="e_name" type="text" value="${e.name}"/></div></div>
+        <div class="grid2">
+          <div class="field"><label>Calories</label><div class="field-wrap"><input id="e_cal" type="number" value="${e.calories}"/><span class="unit">kcal</span></div></div>
+          <div class="field"><label>Protein</label><div class="field-wrap"><input id="e_prot" type="number" value="${e.protein}"/><span class="unit">g</span></div></div>
+          <div class="field"><label>Carbs</label><div class="field-wrap"><input id="e_carbs" type="number" value="${e.carbs}"/><span class="unit">g</span></div></div>
+          <div class="field"><label>Fats</label><div class="field-wrap"><input id="e_fats" type="number" value="${e.fats}"/><span class="unit">g</span></div></div>
+        </div>
+        <div class="meal-pills" id="editMealPills">${mealPills}</div>
+        <button class="btn btn-primary btn-block" onclick="saveEdit('${id}')">Save Changes</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function setEditMeal(btn, meal) {
+  document.querySelectorAll('#editMealPills .meal-pill').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  btn.dataset.meal = meal;
+}
+
+function saveEdit(id) {
+  const activeMeal = document.querySelector('#editMealPills .meal-pill.active');
+  const meal = activeMeal ? activeMeal.textContent.trim() : 'Snacks';
+  const idx = S.entries.findIndex(x=>x.id===id);
+  if(idx<0) return;
+  S.entries[idx] = {...S.entries[idx],name:document.getElementById('e_name').value,calories:parseFloat(document.getElementById('e_cal').value)||0,protein:parseFloat(document.getElementById('e_prot').value)||0,carbs:parseFloat(document.getElementById('e_carbs').value)||0,fats:parseFloat(document.getElementById('e_fats').value)||0,meal};
+  persist();
+  closeModal();
+  render();
+}
+
+function deleteEntry(id) {
+  if(!confirm('Delete this entry?')) return;
+  S.entries = S.entries.filter(e=>e.id!==id);
+  persist();
+  render();
+}
+
+// ── INIT ──
+initHeader();
+updateStreak();
+render();
 </script>
 
 </body>
