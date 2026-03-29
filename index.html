@@ -550,14 +550,41 @@ function renderCalc() {
       <option value="1.725" ${g.activity==1.725?'selected':''}>Active — 6–7 days/week</option>
       <option value="1.9" ${g.activity==1.9?'selected':''}>Very Active — Hard daily exercise</option>
     </select></div></div>
-    <div class="field"><label>Goal</label><div class="field-wrap"><select id="c_goal">
+    <div class="field"><label>Goal</label><div class="field-wrap"><select id="c_goal" onchange="toggleCustomDeficit()">
       <option value="loss" ${g.goal==='loss'||!g.goal?'selected':''}>🔥 Fat Loss (−500 kcal)</option>
       <option value="maintenance" ${g.goal==='maintenance'?'selected':''}>⚖️ Maintenance</option>
       <option value="gain" ${g.goal==='gain'?'selected':''}>💪 Muscle Gain (+300 kcal)</option>
+      <option value="custom" ${g.goal==='custom'?'selected':''}>✏️ Custom Deficit/Surplus</option>
     </select></div></div>
+    <div id="custom_deficit_wrap" style="display:${g.goal==='custom'?'block':'none'}">
+      <div class="field"><label>Custom Adjustment (negative = deficit)</label><div class="field-wrap"><input id="c_custom" type="number" value="${g.customAdj||'-750'}" placeholder="-750"/><span class="unit">kcal</span></div></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+        ${[-250,-500,-750,-1000,250,500].map(v=>`<button onclick="setCustomAdj(${v})" style="padding:5px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(30,41,59,0.6);color:${v<0?'#22d3ee':'#34d399'};font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">${v>0?'+':''}${v}</button>`).join('')}
+      </div>
+    </div>
     <button class="btn btn-orange btn-block" onclick="runCalc()">Calculate My Goals</button>
+    <div style="margin-top:12px;background:rgba(34,211,238,0.08);border:1px solid rgba(34,211,238,0.2);border-radius:12px;padding:12px 14px">
+      <div style="color:#94a3b8;font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px">Custom Protein Goal (optional)</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="flex:1;position:relative">
+          <input id="c_protein_custom" type="number" placeholder="Leave blank = auto (2g/kg)" value="${g.customProtein||''}" style="width:100%;background:rgba(30,41,59,0.8);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:10px 40px 10px 14px;color:#f1f5f9;font-size:15px;outline:none;font-family:inherit"/>
+          <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#475569;font-size:12px;font-weight:600">g</span>
+        </div>
+      </div>
+      <div style="color:#475569;font-size:11px;margin-top:6px">e.g. type 110 if you can only eat 110g protein/day</div>
+    </div>
   </div>
   <div id="calcResults"></div>`;
+}
+
+function toggleCustomDeficit() {
+  const v = document.getElementById('c_goal').value;
+  const wrap = document.getElementById('custom_deficit_wrap');
+  if(wrap) wrap.style.display = v==='custom' ? 'block' : 'none';
+}
+function setCustomAdj(val) {
+  const el = document.getElementById('c_custom');
+  if(el) el.value = val;
 }
 
 function runCalc() {
@@ -570,12 +597,24 @@ function runCalc() {
   if(!w||!h||!a) return;
   const bmr = gender==='male' ? 10*w+6.25*h-5*a+5 : 10*w+6.25*h-5*a-161;
   const tdee = Math.round(bmr*activity);
-  const adj = {loss:-500,maintenance:0,gain:300};
-  const target = tdee + adj[goal];
-  const protein = Math.round(w*2);
-  const fatLoss = goal==='loss' ? (500*7/7700).toFixed(2) : goal==='gain' ? (300*7/7700).toFixed(2) : '0';
 
-  S.goals = {...S.goals, calories:target, protein, weight:w, height:h, age:a, gender, activity, goal};
+  let adj = 0;
+  let customAdj = 0;
+  if(goal==='loss') adj = -500;
+  else if(goal==='maintenance') adj = 0;
+  else if(goal==='gain') adj = 300;
+  else if(goal==='custom') {
+    customAdj = parseInt(document.getElementById('c_custom').value) || -750;
+    adj = customAdj;
+  }
+
+  const target = tdee + adj;
+  const customProteinInput = parseInt(document.getElementById('c_protein_custom')?.value);
+  const protein = customProteinInput > 0 ? customProteinInput : Math.round(w*2);
+  const weeklyChange = (Math.abs(adj)*7/7700).toFixed(2);
+  const isDeficit = adj < 0;
+
+  S.goals = {...S.goals, calories:target, protein, weight:w, height:h, age:a, gender, activity, goal, customAdj, customProtein: customProteinInput||null};
   persist();
   updateStreakUI();
 
@@ -583,7 +622,7 @@ function runCalc() {
     {icon:'⚡',label:'TDEE (Maintenance)',value:`${tdee} kcal/day`,color:'#a78bfa'},
     {icon:'🎯',label:'Daily Calorie Goal',value:`${target} kcal/day`,color:'#f97316'},
     {icon:'💪',label:'Protein Goal',value:`${protein}g/day`,color:'#22d3ee'},
-    {icon:goal==='loss'?'📉':'📈',label:goal==='loss'?'Est. Weekly Fat Loss':goal==='gain'?'Est. Weekly Gain':'Weekly Change',value:goal==='maintenance'?'0 kg':`~${fatLoss} kg/week`,color:goal==='loss'?'#34d399':'#fb7185'},
+    {icon:isDeficit?'📉':'📈',label:isDeficit?'Est. Weekly Fat Loss':'Est. Weekly Gain',value:adj===0?'0 kg':`~${weeklyChange} kg/week`,color:isDeficit?'#34d399':'#fb7185'},
   ];
 
   let html = results.map(r=>`<div class="card" style="padding:14px 18px;margin-bottom:10px">
@@ -595,21 +634,28 @@ function runCalc() {
       <span style="color:${r.color};font-weight:800;font-size:16px">${r.value}</span>
     </div>
   </div>`).join('');
-
   html += `<div style="background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.3);border-radius:14px;padding:12px 16px;margin-bottom:12px"><span style="color:#a5b4fc;font-size:13px;font-weight:600">✅ Goals saved to your dashboard!</span></div>`;
-
   document.getElementById('calcResults').innerHTML = html;
 }
 
 // ── ANALYTICS TAB ──
+let analyticsWeekOffset = 0; // 0 = this week, -1 = last week etc
+
 function renderAnalytics() {
   const goalCal = S.goals.calories || 2000;
+
+  // Build days for selected week
   const days = Array.from({length:7},(_,i)=>{
-    const d = new Date(); d.setDate(d.getDate()-(6-i));
+    const d = new Date();
+    d.setDate(d.getDate() - (6-i) + (analyticsWeekOffset * 7));
     const ds = d.toISOString().split('T')[0];
     const de = S.entries.filter(e=>new Date(e.timestamp).toISOString().split('T')[0]===ds);
     return {date:ds,label:d.toLocaleDateString('en-US',{weekday:'short'}),calories:Math.round(de.reduce((s,e)=>s+e.calories,0)),protein:Math.round(de.reduce((s,e)=>s+e.protein,0)),hasData:de.length>0};
   });
+
+  const weekStart = days[0].date;
+  const weekEnd = days[6].date;
+  const weekLabel = analyticsWeekOffset===0 ? 'This Week' : analyticsWeekOffset===-1 ? 'Last Week' : `${weekStart} → ${weekEnd}`;
 
   const withData = days.filter(d=>d.hasData);
   const avg = Math.round(withData.reduce((s,d)=>s+d.calories,0)/(withData.length||1));
@@ -617,7 +663,20 @@ function renderAnalytics() {
   const defDays = days.filter(d=>d.hasData&&d.calories<goalCal).length;
   const maxCal = Math.max(...days.map(d=>d.calories), goalCal, 1);
 
-  let html = `<div class="stats-grid">
+  let html = `
+  <!-- Week Navigator -->
+  <div class="card" style="padding:12px 16px;margin-bottom:12px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <button onclick="changeWeek(-1)" style="background:rgba(99,102,241,0.2);border:1px solid rgba(99,102,241,0.3);border-radius:10px;padding:6px 14px;color:#a5b4fc;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">← Prev</button>
+      <div style="text-align:center">
+        <div style="color:#f1f5f9;font-weight:700;font-size:14px">${weekLabel}</div>
+        <div style="color:#475569;font-size:11px;margin-top:2px">${weekStart} → ${weekEnd}</div>
+      </div>
+      <button onclick="changeWeek(1)" ${analyticsWeekOffset>=0?'disabled style="opacity:0.3;cursor:not-allowed;':'style="'}background:rgba(99,102,241,0.2);border:1px solid rgba(99,102,241,0.3);border-radius:10px;padding:6px 14px;color:#a5b4fc;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">Next →</button>
+    </div>
+  </div>`;
+
+  html += `<div class="stats-grid">
     <div class="stat-card"><div class="stat-label">Avg Calories</div><div class="stat-value" style="color:#f97316">${avg}<span class="stat-unit"> kcal</span></div></div>
     <div class="stat-card"><div class="stat-label">Avg Protein</div><div class="stat-value" style="color:#22d3ee">${avgProt}<span class="stat-unit"> g</span></div></div>
     <div class="stat-card"><div class="stat-label">Deficit Days</div><div class="stat-value" style="color:#34d399">${defDays}<span class="stat-unit">/7</span></div></div>
@@ -649,23 +708,46 @@ function renderAnalytics() {
   if(defDays>=5) insights += insightHTML('🔥',"You're in a consistent calorie deficit!",'#34d399');
   if(avgProt<(S.goals.protein||150)*0.7&&withData.length>0) insights += insightHTML('⚠️','Average protein is low this week','#fbbf24');
   if(avg<goalCal*0.8&&avg>0) insights += insightHTML('💪','Great calorie control this week!','#22d3ee');
+  if(avg>goalCal*1.05&&withData.length>3) insights += insightHTML('⚠️','Calories above goal most days','#f87171');
   if(insights) html += `<div class="card"><div class="card-title">Weekly Insights</div>${insights}</div>`;
-
-  if(!withData.length) html += `<div class="card" style="text-align:center;padding:30px 20px"><div style="font-size:36px">📊</div><div style="color:#475569;margin-top:10px;font-size:14px">Log meals to see your analytics</div></div>`;
+  if(!withData.length) html += `<div class="card" style="text-align:center;padding:30px 20px"><div style="font-size:36px">📊</div><div style="color:#475569;margin-top:10px;font-size:14px">No data logged this week</div></div>`;
 
   return html;
 }
 
+function changeWeek(dir) {
+  analyticsWeekOffset = Math.min(0, analyticsWeekOffset + dir);
+  render();
+}
+
 // ── GOALS TAB ──
+let goalsWeekOffset = 0;
+
 function renderGoals() {
   const wLog = S.goals.weightLog || [];
   const latestW = wLog.length>0?wLog[wLog.length-1].weight:null;
   const firstW = wLog.length>1?wLog[0].weight:null;
   const wChange = latestW&&firstW?(latestW-firstW).toFixed(1):null;
-  const weekE = S.entries.filter(e=>(Date.now()-e.timestamp)<7*24*3600*1000);
-  const weekCals = weekE.reduce((s,e)=>s+e.calories,0);
-  const weekDef = Math.max(0,(S.goals.calories||2000)*7-weekCals);
-  const estFat = (weekDef/7700).toFixed(2);
+
+  // Build selected week's days
+  const goalCal = S.goals.calories || 2000;
+  let totalDef = 0;
+  let daysLogged = 0;
+  let weekDates = [];
+  for(let i=6;i>=0;i--){
+    const d = new Date();
+    d.setDate(d.getDate() - i + (goalsWeekOffset * 7));
+    const ds = d.toISOString().split('T')[0];
+    weekDates.push(ds);
+    const dayEntries = S.entries.filter(e=>new Date(e.timestamp).toISOString().split('T')[0]===ds);
+    if(dayEntries.length>0){
+      const dayCals = dayEntries.reduce((s,e)=>s+e.calories,0);
+      totalDef += Math.max(0, goalCal - dayCals);
+      daysLogged++;
+    }
+  }
+  const estFat = (totalDef/7700).toFixed(2);
+  const weekLabel = goalsWeekOffset===0?'This Week':goalsWeekOffset===-1?'Last Week':`${weekDates[0]} → ${weekDates[6]}`;
 
   let html = `<div class="card">
     <div class="card-title">⚖️ Weight Tracker</div>
@@ -682,9 +764,18 @@ function renderGoals() {
   </div>
 
   <div class="card" style="padding:16px 20px">
-    <div class="card-title">📉 This Week's Estimate</div>
+    <div class="card-title">📉 Weekly Deficit Estimate</div>
+    <!-- Week Navigator -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <button onclick="changeGoalsWeek(-1)" style="background:rgba(99,102,241,0.2);border:1px solid rgba(99,102,241,0.3);border-radius:10px;padding:6px 14px;color:#a5b4fc;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">← Prev</button>
+      <div style="text-align:center">
+        <div style="color:#f1f5f9;font-weight:700;font-size:13px">${weekLabel}</div>
+        <div style="color:#475569;font-size:11px;margin-top:1px">${weekDates[0]} → ${weekDates[6]}</div>
+      </div>
+      <button onclick="changeGoalsWeek(1)" ${goalsWeekOffset>=0?'disabled style="opacity:0.3;cursor:not-allowed;"':'style="cursor:pointer;"'} style="background:rgba(99,102,241,0.2);border:1px solid rgba(99,102,241,0.3);border-radius:10px;padding:6px 14px;color:#a5b4fc;font-size:14px;font-weight:700;font-family:inherit">Next →</button>
+    </div>
     <div style="display:flex;justify-content:space-between;align-items:center">
-      <div><div style="color:#64748b;font-size:12px">Weekly deficit</div><div style="color:#34d399;font-size:26px;font-weight:800;margin-top:4px">${Math.round(weekDef)} kcal</div></div>
+      <div><div style="color:#64748b;font-size:12px">Total deficit (${daysLogged} days logged)</div><div style="color:#34d399;font-size:26px;font-weight:800;margin-top:4px">${Math.round(totalDef)} kcal</div></div>
       <div style="text-align:right"><div style="color:#64748b;font-size:12px">Est. fat loss</div><div style="color:#f97316;font-size:26px;font-weight:800;margin-top:4px">${estFat} kg</div></div>
     </div>
   </div>
@@ -697,6 +788,11 @@ function renderGoals() {
   </div>`;
 
   return html;
+}
+
+function changeGoalsWeek(dir) {
+  goalsWeekOffset = Math.min(0, goalsWeekOffset + dir);
+  render();
 }
 
 function logWeight() {
@@ -721,10 +817,12 @@ function saveGoals() {
 // ── ADD MODAL ──
 let modalMode = 'manual';
 let modalMeal = 'Breakfast';
+let modalDate = null; // null = always use today() fresh
 
-function openAddModal(meal) {
+function openAddModal(meal, date) {
   modalMeal = meal || 'Breakfast';
   modalMode = 'manual';
+  modalDate = date || today(); // always get fresh today
   renderModal();
 }
 
@@ -798,6 +896,13 @@ function renderModal() {
           <button class="mode-btn ${modalMode==='manual'?'active':''}" onclick="setModalMode('manual')">✏️ Manual Entry</button>
           <button class="mode-btn ${modalMode==='saved'?'active':''}" onclick="setModalMode('saved')">⚡ Quick Add</button>
         </div>
+        <!-- Date picker -->
+        <div class="field" style="margin-bottom:12px">
+          <label>Log Date</label>
+          <div class="field-wrap">
+            <input type="date" id="modal_date" value="${modalDate}" max="${today()}" onchange="modalDate=this.value" style="background:rgba(30,41,59,0.8);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:10px 14px;color:#f1f5f9;font-size:15px;outline:none;width:100%;font-family:inherit;-webkit-appearance:none;color-scheme:dark"/>
+          </div>
+        </div>
         <div class="meal-pills">${mealPills}</div>
         ${body}
       </div>
@@ -832,6 +937,9 @@ function submitAdd() {
   const cal = parseFloat(document.getElementById('m_cal').value);
   if(!name || !cal) return;
   const qty = parseInt(document.getElementById('manual_qty')?.textContent) || 1;
+  // Use selected date at noon to avoid timezone issues
+  const logDate = document.getElementById('modal_date')?.value || today();
+  const timestamp = new Date(logDate + 'T12:00:00').getTime();
   S.entries.push({
     id: genId(),
     name: qty > 1 ? `${name} ×${qty}` : name,
@@ -840,7 +948,7 @@ function submitAdd() {
     carbs: Math.round((parseFloat(document.getElementById('m_carbs').value)||0) * qty * 10) / 10,
     fats: Math.round((parseFloat(document.getElementById('m_fats').value)||0) * qty * 10) / 10,
     meal: modalMeal,
-    timestamp: Date.now()
+    timestamp
   });
   persist();
   updateStreak();
@@ -885,15 +993,17 @@ function quickAddModal(id) {
   if(!food) return;
   const qtyEl = document.getElementById('qty_'+id);
   const qty = qtyEl ? parseInt(qtyEl.textContent) || 1 : 1;
+  const logDate = document.getElementById('modal_date')?.value || today();
+  const timestamp = new Date(logDate + 'T12:00:00').getTime();
   S.entries.push({
-    id:genId(),
+    id: genId(),
     name: qty > 1 ? `${food.name} ×${qty}` : food.name,
     calories: Math.round(food.calories * qty),
     protein: Math.round(food.protein * qty * 10) / 10,
     carbs: Math.round(food.carbs * qty * 10) / 10,
     fats: Math.round(food.fats * qty * 10) / 10,
-    meal:modalMeal,
-    timestamp:Date.now()
+    meal: modalMeal,
+    timestamp
   });
   persist();
   updateStreak();
