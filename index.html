@@ -293,7 +293,9 @@ function updateStreakUI() {
 // ── TABS ──
 function switchTab(name, btn) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  if(btn) btn.classList.add('active');
+  // Re-activate correct button if btn not passed
+  const tabBtn = btn || document.getElementById('tab-'+name);
+  if(tabBtn) tabBtn.classList.add('active');
   S.currentTab = name;
   render();
 }
@@ -614,7 +616,7 @@ function runCalc() {
   const weeklyChange = (Math.abs(adj)*7/7700).toFixed(2);
   const isDeficit = adj < 0;
 
-  S.goals = {...S.goals, calories:target, protein, weight:w, height:h, age:a, gender, activity, goal, customAdj, customProtein: customProteinInput||null};
+  S.goals = {...S.goals, calories:target, protein, weight:w, height:h, age:a, gender, activity, goal, customAdj, customProtein: customProteinInput||null, tdee};
   persist();
   updateStreakUI();
 
@@ -729,8 +731,9 @@ function renderGoals() {
   const firstW = wLog.length>1?wLog[0].weight:null;
   const wChange = latestW&&firstW?(latestW-firstW).toFixed(1):null;
 
-  // Build selected week's days
+  // Use TDEE for real deficit, not calorie goal
   const goalCal = S.goals.calories || 2000;
+  const tdee = S.goals.tdee || goalCal; // TDEE saved from calculator
   let totalDef = 0;
   let daysLogged = 0;
   let weekDates = [];
@@ -742,7 +745,8 @@ function renderGoals() {
     const dayEntries = S.entries.filter(e=>new Date(e.timestamp).toISOString().split('T')[0]===ds);
     if(dayEntries.length>0){
       const dayCals = dayEntries.reduce((s,e)=>s+e.calories,0);
-      totalDef += Math.max(0, goalCal - dayCals);
+      // Real deficit = TDEE - what you actually ate
+      totalDef += Math.max(0, tdee - dayCals);
       daysLogged++;
     }
   }
@@ -772,8 +776,10 @@ function renderGoals() {
         <div style="color:#f1f5f9;font-weight:700;font-size:13px">${weekLabel}</div>
         <div style="color:#475569;font-size:11px;margin-top:1px">${weekDates[0]} → ${weekDates[6]}</div>
       </div>
-      <button onclick="changeGoalsWeek(1)" ${goalsWeekOffset>=0?'disabled style="opacity:0.3;cursor:not-allowed;"':'style="cursor:pointer;"'} style="background:rgba(99,102,241,0.2);border:1px solid rgba(99,102,241,0.3);border-radius:10px;padding:6px 14px;color:#a5b4fc;font-size:14px;font-weight:700;font-family:inherit">Next →</button>
+      <button onclick="changeGoalsWeek(1)" ${goalsWeekOffset>=0?'disabled':''}
+        style="background:rgba(99,102,241,0.2);border:1px solid rgba(99,102,241,0.3);border-radius:10px;padding:6px 14px;color:#a5b4fc;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;opacity:${goalsWeekOffset>=0?'0.3':'1'}">Next →</button>
     </div>
+    ${tdee !== goalCal ? `<div style="background:rgba(99,102,241,0.08);border-radius:10px;padding:8px 12px;margin-bottom:12px;font-size:12px;color:#64748b">Deficit = TDEE (<span style="color:#a78bfa">${tdee} kcal</span>) − calories eaten</div>` : `<div style="background:rgba(251,191,36,0.08);border-radius:10px;padding:8px 12px;margin-bottom:12px;font-size:12px;color:#fbbf24">⚠️ Run Calculator first to set your TDEE for accurate deficit</div>`}
     <div style="display:flex;justify-content:space-between;align-items:center">
       <div><div style="color:#64748b;font-size:12px">Total deficit (${daysLogged} days logged)</div><div style="color:#34d399;font-size:26px;font-weight:800;margin-top:4px">${Math.round(totalDef)} kcal</div></div>
       <div style="text-align:right"><div style="color:#64748b;font-size:12px">Est. fat loss</div><div style="color:#f97316;font-size:26px;font-weight:800;margin-top:4px">${estFat} kg</div></div>
@@ -806,8 +812,9 @@ function logWeight() {
 }
 
 function saveGoals() {
-  S.goals.calories = parseInt(document.getElementById('g_cal').value)||2000;
-  S.goals.protein = parseInt(document.getElementById('g_prot').value)||150;
+  const cal = parseInt(document.getElementById('g_cal').value)||2000;
+  const prot = parseInt(document.getElementById('g_prot').value)||150;
+  S.goals = {...S.goals, calories: cal, protein: prot}; // preserve tdee and other fields
   persist();
   const btn = event.target;
   btn.textContent = '✅ Saved!';
