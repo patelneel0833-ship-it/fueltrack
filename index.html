@@ -10,10 +10,11 @@
 <meta name="theme-color" content="#020617"/>
 <title>FuelTrack</title>
 <script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("ftui_theme")||"midnight");}catch(e){}</script>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Bricolage+Grotesque:wght@500;700;800&family=Chakra+Petch:wght@400;500;600;700&family=Sora:wght@400;600;700;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-html,body{height:100%;background:transparent;font-family:'DM Sans',-apple-system,sans-serif;color:#f1f5f9;overflow-x:hidden;}
+html,body{background:transparent;font-family:'DM Sans',-apple-system,sans-serif;color:#f1f5f9;}
+html{overflow-x:hidden;} /* only on html so the page itself scrolls (keeps the sticky header working on iOS) */
 :root{--ac:#6366f1;--ac2:#8b5cf6;--acs:#a5b4fc;--acr:99,102,241;--bgr:2,6,23;--cr:15,23,42;--mr:13,20,38;--glow1:#1e1b4b;--glow2:#0c1a2e;--bg:#020617;--card:rgba(var(--cr),0.85);--border:rgba(255,255,255,0.08);--text:#f1f5f9;--sub:#64748b;--accent:var(--ac);--orange:#f97316;--cyan:#22d3ee;--purple:#a78bfa;--pink:#fb7185;--green:#34d399;}
 ::-webkit-scrollbar{width:3px;}
 ::-webkit-scrollbar-thumb{background:rgba(var(--acr),0.3);border-radius:99px;}
@@ -24,7 +25,7 @@ html{background:radial-gradient(ellipse at 20% 0%,var(--glow1) 0%,transparent 50
 #app{min-height:100vh;position:relative;z-index:1;padding-bottom:80px;}
 
 /* Header */
-.header{position:sticky;top:0;z-index:100;background:rgba(var(--bgr),0.9);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.06);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;}
+.header{position:-webkit-sticky;position:sticky;top:0;z-index:100;padding-top:calc(12px + env(safe-area-inset-top,0px));padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px));background:rgba(var(--bgr),0.9);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
 .logo{font-weight:800;font-size:20px;letter-spacing:-0.03em;}
 .logo span:first-child{background:linear-gradient(135deg,var(--ac),#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
 .logo-date{color:#334155;font-size:11px;font-weight:500;margin-top:2px;}
@@ -279,6 +280,69 @@ textarea.paste{width:100%;min-height:90px;background:rgba(30,41,59,0.8);border:1
 .sw::after{content:'';position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .2s;}
 .sw.on{background:var(--ac);}.sw.on::after{transform:translateX(18px);}
 .theme-btn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;width:38px;height:38px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+/* fasting */
+.ftl{position:relative;margin:14px 0 8px;padding-top:12px;}
+.ftl-bar{display:flex;gap:3px;}
+.ftl-seg{flex:1;height:14px;border:none;border-radius:6px;background:rgba(255,255,255,0.08);cursor:pointer;padding:0;position:relative;min-width:0;}
+.ftl-seg.on{background:var(--c);box-shadow:0 0 10px var(--c);}
+.ftl-seg::before{content:'';position:absolute;inset:-14px -1px;}
+.ftl-mark{position:absolute;top:-2px;transform:translateX(-50%);font-size:12px;color:#f1f5f9;line-height:1;pointer-events:none;}
+.ftl-lbl{display:flex;margin-top:4px;}
+.ftl-lbl span{flex:1;text-align:center;font-size:10px;color:#64748b;font-weight:600;}
+.fx-ex{border-left:3px solid;padding:8px 12px;background:rgba(30,41,59,0.4);border-radius:0 12px 12px 0;margin-top:6px;font-size:13px;}
+.fc{margin-bottom:8px;}
+.fc-row{display:flex;align-items:center;gap:8px;width:100%;min-height:36px;background:none;border:none;color:#e2e8f0;font-family:inherit;font-size:12.5px;text-align:left;cursor:pointer;padding:2px 0;}
+.fc-row .dot{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
+.fc-n{flex:1;font-weight:600;}.fc-n em{font-style:normal;color:#64748b;font-weight:500;margin-left:4px;}
+.fc-c{color:#94a3b8;white-space:nowrap;font-variant-numeric:tabular-nums;}.fc-c b{color:#f1f5f9;}
+.fc-bar{height:5px;border-radius:99px;background:#1e293b;overflow:hidden;}.fc-bar i{display:block;height:100%;border-radius:99px;transition:width .5s;}
+.fc.on .fc-row{color:#fff;}
+.fc-more{margin-top:8px;padding:6px 8px;background:rgba(30,41,59,0.35);border-radius:12px;animation:fadeIn .2s;}
+.fi{padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);}.fi:last-child{border-bottom:none;}
+.fi-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:3px;}.fi-top b{font-size:14px;color:#f1f5f9;}
+.fcells{display:flex;flex-wrap:wrap;gap:3px;}
+.fcell{width:20px;height:20px;border-radius:5px;border:none;cursor:pointer;padding:0;position:relative;}
+.fcell::before{content:'';position:absolute;inset:-3px;}
+.fcell.sel{outline:2px solid #fff;outline-offset:1px;}
+
+.pt-row{display:block;width:100%;text-align:left;font-family:inherit;color:inherit;background:rgba(30,41,59,0.45);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:10px 12px;margin-bottom:6px;cursor:pointer;min-height:44px;-webkit-tap-highlight-color:transparent;}
+.pt-row.on{border-color:rgba(var(--acr),.5);}
+.pt-top{display:flex;justify-content:space-between;gap:10px;font-size:13px;font-weight:700;color:#f1f5f9;}
+.pt-sub{color:#64748b;font-size:11.5px;margin-top:3px;line-height:1.4;}
+.plain{display:flex;gap:8px;margin:4px 0 12px;padding:9px 11px;border-radius:12px;background:rgba(148,163,184,0.07);color:#94a3b8;font-size:12px;line-height:1.5;}
+/* ══ NEW THEMES: Lava Lamp · Blueprint · Tidepool · Vital Sign ══ */
+[data-theme] :is(body,input,select,textarea,button){font-family:var(--ff,'DM Sans'),-apple-system,sans-serif;}
+[data-theme=lava]{--ff:'Bricolage Grotesque';--ac:#ff5a4e;--ac2:#ffb703;--acs:#ffc4a8;--acr:255,90,78;--bgr:23,6,18;--cr:46,14,36;--mr:40,10,30;--glow1:#4a0d2e;--glow2:#2b0a1f;--bg:#170512;}
+[data-theme=blueprint]{--ff:'Chakra Petch';--ac:#7dd3fc;--ac2:#e0f2fe;--acs:#bae6fd;--acr:125,211,252;--bgr:6,38,92;--cr:8,52,120;--mr:7,46,108;--glow1:#0b4aa8;--glow2:#062a63;--bg:#05306f;}
+[data-theme=tide]{--ff:'Sora';--ac:#5eead4;--ac2:#f9a8d4;--acs:#ccfbf1;--acr:94,234,212;--bgr:3,15,31;--cr:8,34,56;--mr:6,28,48;--glow1:#0f4c6e;--glow2:#2a1048;--bg:#030f1f;}
+[data-theme=vital]{--ff:'Rajdhani';--ac:#39ff88;--ac2:#ff3b5c;--acs:#a7f3c8;--acr:57,255,136;--bgr:2,10,8;--cr:6,22,16;--mr:5,18,14;--glow1:#052e1c;--glow2:#1a0509;--bg:#030a07;}
+[data-theme=lava] #fx,[data-theme=blueprint] #fx,[data-theme=tide] #fx,[data-theme=vital] #fx{display:block;}
+/* Lava: soft molten glass, floating pill tab bar */
+[data-theme=lava] :is(.card,.acard,.stat-card,.tile,.saved-item):not(.ac-more .card){border-radius:32px;border-color:rgba(255,200,160,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 14px 40px rgba(20,0,10,.4);}
+[data-theme=lava] .modal{border-radius:36px 36px 0 0;}
+[data-theme=lava] :is(.btn,.add-btn,.meal-pill,.a-seg,.a-seg button,.mode-toggle,.chip){border-radius:99px;}
+[data-theme=lava] .tab-bar{left:12px;right:12px;bottom:max(10px,env(safe-area-inset-bottom));border-radius:34px;border:1px solid rgba(255,200,160,.2);padding:8px 0;box-shadow:0 12px 40px rgba(0,0,0,.5);}
+[data-theme=lava] .logo{font-weight:800;letter-spacing:-.05em;}
+/* Blueprint: engineering-paper grid, double-line frames, square corners */
+html[data-theme=blueprint]{background:linear-gradient(rgba(190,225,255,.17) 1px,transparent 1px) 0 0/96px 96px fixed,linear-gradient(90deg,rgba(190,225,255,.17) 1px,transparent 1px) 0 0/96px 96px fixed,linear-gradient(rgba(190,225,255,.07) 1px,transparent 1px) 0 0/24px 24px fixed,linear-gradient(90deg,rgba(190,225,255,.07) 1px,transparent 1px) 0 0/24px 24px fixed,radial-gradient(ellipse at 50% 0%,var(--glow1),var(--bg) 75%) fixed;}
+[data-theme=blueprint] :is(.card,.acard,.stat-card,.tile,.saved-item,.modal,.mini div,.pt-row):not(.ac-more .card){border-radius:2px;border:1px dashed rgba(190,225,255,.5);outline:1px solid rgba(190,225,255,.2);outline-offset:-6px;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;}
+[data-theme=blueprint] :is(.btn,.add-btn,.theme-btn,.meal-pill,.mode-btn,.a-seg,.a-seg button,.chip,.field input,.field select,.search-input,textarea.paste,.qty-stepper,.insight,.sw){border-radius:2px;}
+[data-theme=blueprint] :is(.field input,.field select,.search-input,textarea.paste,.qty-stepper){background:rgba(4,30,76,.75);border-color:rgba(190,225,255,.4);}
+[data-theme=blueprint] .tab-bar,[data-theme=blueprint] .header{border-color:rgba(190,225,255,.4);border-style:dashed;}
+[data-theme=blueprint] .logo{letter-spacing:.02em;}
+/* Tidepool: bubble-cornered glass */
+[data-theme=tide] :is(.card,.acard,.stat-card,.tile,.saved-item):not(.ac-more .card){border-radius:30px 30px 30px 8px;background:linear-gradient(160deg,rgba(255,255,255,.11),rgba(var(--cr),.62) 45%);border-color:rgba(204,251,241,.2);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),inset 0 -20px 40px rgba(94,234,212,.04);}
+[data-theme=tide] :is(.btn,.add-btn,.meal-pill){border-radius:20px 20px 20px 6px;}
+[data-theme=tide] .tab-bar{left:10px;right:10px;bottom:max(8px,env(safe-area-inset-bottom));border-radius:30px 30px 30px 10px;border:1px solid rgba(204,251,241,.2);padding:8px 0;}
+/* Vital Sign: patient-monitor channels, CRT scanlines */
+html[data-theme=vital]{background:linear-gradient(rgba(57,255,136,.06) 1px,transparent 1px) 0 0/20px 20px fixed,linear-gradient(90deg,rgba(57,255,136,.06) 1px,transparent 1px) 0 0/20px 20px fixed,radial-gradient(ellipse at 80% 100%,var(--glow2),transparent 55%) fixed,var(--bg) fixed;}
+[data-theme=vital] body::after{content:'';position:fixed;inset:0;z-index:2;pointer-events:none;background:repeating-linear-gradient(transparent 0 2px,rgba(0,0,0,.14) 2px 3px),radial-gradient(ellipse at center,transparent 60%,rgba(0,0,0,.45));}
+[data-theme=vital] :is(.card,.acard,.stat-card,.tile,.saved-item):not(.ac-more .card){border-radius:10px;border:1px solid rgba(var(--acr),.28);border-left:4px solid var(--ac);box-shadow:0 0 22px rgba(var(--acr),.08),inset 0 0 30px rgba(var(--acr),.04);}
+[data-theme=vital] :is(.big,.tile-v,.stat-value){text-shadow:0 0 12px rgba(var(--acr),.6);letter-spacing:.01em;}
+[data-theme=vital] :is(.btn,.add-btn,.meal-pill){border-radius:6px;}
+[data-theme=vital] .tab-bar{border-top:1px solid rgba(var(--acr),.4);box-shadow:0 -6px 24px rgba(var(--acr),.1);}
+[data-theme=vital] .logo{letter-spacing:.04em;}
+@media(prefers-reduced-motion:reduce){[data-theme=lava] #fx,[data-theme=blueprint] #fx,[data-theme=tide] #fx,[data-theme=vital] #fx{display:block!important;}[data-motion=off] #fx{display:none!important;}}
 </style>
 
 </head>
@@ -942,7 +1006,34 @@ function saveGoals() {
 let modalMode = 'manual';
 let modalMeal = 'Breakfast';
 let modalDate = null;
+let modalTime = '';
+let modalTimeMode = 'auto'; // 'auto' = exact moment of saving, 'manual' = person picks the time
 let modalCart = []; // multi-select cart for quick add
+
+// ── Entry time: automatic (now) or manual (back-fill) ──
+function timeBlockHTML() {
+  const past = modalDate && modalDate !== today();
+  const mode = past ? 'manual' : modalTimeMode;
+  const pill = (m, label) => `<button type="button" class="meal-pill ${mode===m?'active':''}" ${past&&m==='auto'?'disabled style="opacity:.4"':''} onclick="setTimeMode('${m}')">${label}</button>`;
+  const hint = mode==='auto'
+    ? 'Saved with the exact time you tap add, like your phone clock.'
+    : (past ? 'Pick when you ate this. If you don\'t remember, leave it empty and it is saved as "time unknown" and left out of fasting analysis.'
+            : 'Pick when you ate this (it can\'t be in the future). Leave empty to use the current time.');
+  return `<label>Time</label>
+    <div class="meal-pills" style="margin-bottom:8px">${pill('auto','🕒 Now (automatic)')}${pill('manual','✏️ Set time')}</div>
+    ${mode==='manual'?`<div class="field-wrap"><input type="time" id="modal_time" value="${esc(modalTime)}" ${modalDate===today()?`max="${pad2(new Date().getHours())}:${pad2(new Date().getMinutes())}"`:''} onchange="modalTime=this.value" style="background:rgba(30,41,59,0.8);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:10px 14px;color:#f1f5f9;font-size:15px;outline:none;width:100%;font-family:inherit;-webkit-appearance:none;color-scheme:dark"/></div>`:''}
+    <div class="note" style="margin-top:4px">${hint}</div>`;
+}
+function refreshTimeBlock() { const el = document.getElementById('timeBlock'); if (el) el.innerHTML = timeBlockHTML(); }
+function setTimeMode(m) { modalTimeMode = m; if (m==='auto') modalTime = ''; refreshTimeBlock(); }
+function onModalDateChange(v) { modalDate = v; refreshTimeBlock(); }
+// the time string to save with: only in manual mode (a past date is always manual)
+function getModalTime() {
+  const past = modalDate && modalDate !== today();
+  if (!past && modalTimeMode === 'auto') return '';
+  const el = document.getElementById('modal_time');
+  return (el ? el.value : modalTime) || '';
+}
 
 function openAddModal(meal, date) {
   modalMeal = meal || 'Breakfast';
@@ -953,6 +1044,7 @@ function openAddModal(meal, date) {
   }
   // If a specific date passed (from log tab), use it
   if (date) modalDate = date;
+  modalTimeMode = (modalDate && modalDate !== today()) ? 'manual' : 'auto';
   renderModal();
 }
 
@@ -1063,9 +1155,10 @@ function renderModal() {
         <div class="field" style="margin-bottom:12px">
           <label>Log Date</label>
           <div class="field-wrap">
-            <input type="date" id="modal_date" value="${modalDate}" max="${today()}" onchange="modalDate=this.value" style="background:rgba(30,41,59,0.8);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:10px 14px;color:#f1f5f9;font-size:15px;outline:none;width:100%;font-family:inherit;-webkit-appearance:none;color-scheme:dark"/>
+            <input type="date" id="modal_date" value="${modalDate}" max="${today()}" onchange="onModalDateChange(this.value)" style="background:rgba(30,41,59,0.8);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:10px 14px;color:#f1f5f9;font-size:15px;outline:none;width:100%;font-family:inherit;-webkit-appearance:none;color-scheme:dark"/>
           </div>
         </div>
+        <div class="field" style="margin-bottom:12px" id="timeBlock">${timeBlockHTML()}</div>
         <div class="meal-pills">${mealPills}</div>
         ${body}
       </div>
@@ -1085,6 +1178,8 @@ function setModalMode(mode) { modalMode = mode; renderModal(); }
 function setModalMeal(meal) { modalMeal = meal; renderModal(); }
 function closeModal() {
   modalCart = []; // clear cart on close
+  modalTime = '';
+  modalTimeMode = 'auto';
   document.getElementById('modalContainer').innerHTML = '';
 }
 
@@ -1126,10 +1221,28 @@ function clearCart() {
   renderModal();
 }
 
+// Real-timestamp helpers: entries without a genuinely recorded time are flagged noTime (or sit at exactly 12:00:00.000 from older versions)
+function makeTs(dateStr, timeVal) {
+  const p = String(dateStr).split('-').map(Number);
+  if (timeVal && /^\d{1,2}:\d{2}/.test(timeVal)) {
+    const hm = timeVal.split(':').map(Number);
+    let ts = new Date(p[0], p[1]-1, p[2], hm[0], hm[1], 0, 0).getTime();
+    if (ts > Date.now()) ts = Date.now(); // never record a time in the future
+    return {timestamp: ts, flag: {}};
+  }
+  if (dateStr === today()) return {timestamp: Date.now(), flag: {}};
+  return {timestamp: new Date(p[0], p[1]-1, p[2], 12, 0, 0, 0).getTime(), flag: {noTime: true}};
+}
+function realTs(e) {
+  if (!e || !isFinite(e.timestamp) || e.noTime) return false;
+  const d = new Date(e.timestamp);
+  return !(d.getHours()===12 && d.getMinutes()===0 && d.getSeconds()===0 && d.getMilliseconds()===0);
+}
+
 function addCartToMeal() {
   if(modalCart.length === 0) return;
   const logDate = document.getElementById('modal_date')?.value || modalDate || today();
-  const timestamp = new Date(logDate + 'T12:00:00').getTime();
+  const _t = makeTs(logDate, getModalTime()); const timestamp = _t.timestamp;
   modalCart.forEach(item => {
     S.entries.push({
       id: genId(),
@@ -1139,7 +1252,7 @@ function addCartToMeal() {
       carbs: item.carbs,
       fats: item.fats,
       meal: modalMeal,
-      timestamp
+      timestamp, ..._t.flag
     });
   });
   persist();
@@ -1171,7 +1284,7 @@ function submitAdd() {
   const qty = parseInt(document.getElementById('manual_qty')?.textContent) || 1;
   // Use selected date at noon to avoid timezone issues
   const logDate = document.getElementById('modal_date')?.value || today();
-  const timestamp = new Date(logDate + 'T12:00:00').getTime();
+  const _t = makeTs(logDate, getModalTime()); const timestamp = _t.timestamp;
   S.entries.push({
     id: genId(),
     name: qty > 1 ? `${name} ×${qty}` : name,
@@ -1180,7 +1293,7 @@ function submitAdd() {
     carbs: Math.round((parseFloat(document.getElementById('m_carbs').value)||0) * qty * 10) / 10,
     fats: Math.round((parseFloat(document.getElementById('m_fats').value)||0) * qty * 10) / 10,
     meal: modalMeal,
-    timestamp
+    timestamp, ..._t.flag
   });
   persist();
   updateStreak();
@@ -1226,7 +1339,7 @@ function quickAddModal(id) {
   const qtyEl = document.getElementById('qty_'+id);
   const qty = qtyEl ? clamp(parseInt(qtyEl.value!==undefined?qtyEl.value:qtyEl.textContent)||1,1,99) : 1;
   const logDate = document.getElementById('modal_date')?.value || today();
-  const timestamp = new Date(logDate + 'T12:00:00').getTime();
+  const _t = makeTs(logDate, getModalTime()); const timestamp = _t.timestamp;
   S.entries.push({
     id: genId(),
     name: qty > 1 ? `${food.name} ×${qty}` : food.name,
@@ -1235,7 +1348,7 @@ function quickAddModal(id) {
     carbs: Math.round(food.carbs * qty * 10) / 10,
     fats: Math.round(food.fats * qty * 10) / 10,
     meal: modalMeal,
-    timestamp
+    timestamp, ..._t.flag
   });
   persist();
   updateStreak();
@@ -1265,6 +1378,11 @@ function editEntry(id) {
           <div class="field"><label>Carbs</label><div class="field-wrap"><input id="e_carbs" type="number" value="${e.carbs}"/><span class="unit">g</span></div></div>
           <div class="field"><label>Fats</label><div class="field-wrap"><input id="e_fats" type="number" value="${e.fats}"/><span class="unit">g</span></div></div>
         </div>
+        <div class="grid2">
+          <div class="field"><label>Date</label><div class="field-wrap"><input id="e_date" type="date" value="${dateOf(e.timestamp)}" max="${today()}" style="color-scheme:dark;font-size:16px"/></div></div>
+          <div class="field"><label>Time</label><div class="field-wrap"><input id="e_time" type="time" value="${realTs(e)?pad2(new Date(e.timestamp).getHours())+':'+pad2(new Date(e.timestamp).getMinutes()):''}" style="color-scheme:dark;font-size:16px"/></div></div>
+        </div>
+        ${realTs(e)?'':'<div class="note" style="margin:-4px 0 10px">No time was recorded for this entry, so it is left out of fasting analysis. Add a time if you know it.</div>'}
         <div class="meal-pills" id="editMealPills">${mealPills}</div>
         <button class="btn btn-primary btn-block" data-id="${e.id}" onclick="saveEdit(this.dataset.id)">Save Changes</button>
       </div>
@@ -1283,8 +1401,18 @@ function saveEdit(id) {
   const meal = activeMeal ? activeMeal.textContent.trim() : 'Snacks';
   const idx = S.entries.findIndex(x => x.id === id);
   if(idx < 0) return;
+  const old = S.entries[idx];
+  const ed = (document.getElementById('e_date')||{}).value, et = (document.getElementById('e_time')||{}).value;
+  let tsPatch = {};
+  if (isValidDS(ed) && ed <= today()) {
+    if (et) { const t2 = makeTs(ed, et); tsPatch = {timestamp: t2.timestamp, noTime: undefined}; }
+    else if (ed !== dateOf(old.timestamp) || !realTs(old)) {
+      if (ed !== dateOf(old.timestamp)) { const p = ed.split('-').map(Number); tsPatch = {timestamp: new Date(p[0],p[1]-1,p[2],12,0,0,0).getTime(), noTime: true}; }
+    }
+  }
   S.entries[idx] = {
     ...S.entries[idx],
+    ...tsPatch,
     name: document.getElementById('e_name').value,
     calories: parseFloat(document.getElementById('e_cal').value) || 0,
     protein: parseFloat(document.getElementById('e_prot').value) || 0,
@@ -1851,7 +1979,7 @@ function kvr(k,v){return `<div class="kv"><span>${k}</span><span>${v}</span></di
 function secCard(id,o){
   const open=!!aOpen[id];
   return `<section class="acard" id="ac-${id}"><div class="ac-top"><button class="ac-title" onclick="toggleA('${id}')" aria-expanded="${open}">${o.title}</button>${o.action||''}</div>
-    <div class="${o.detail?'ac-tap':''}" ${o.detail?`onclick="toggleA('${id}')"`:''}>${o.body}</div>
+    <div class="${o.detail?'ac-tap':''}" ${o.detail?`onclick="if(!event.target.closest('button,a,input,select,textarea'))toggleA('${id}')"`:''}>${o.body}</div>
     ${o.detail?`<button class="ac-more-btn" onclick="toggleA('${id}')" aria-expanded="${open}">${open?'Hide details':'View details'}<span class="chev ${open?'up':''}">▾</span></button>`:''}
     ${o.detail&&open?`<div class="ac-more">${o.detail}</div>`:''}</section>`;
 }
@@ -2081,11 +2209,236 @@ function secData(){
     ${open?`<div class="ac-more">${renderAData()}</div>`:''}</section>`;
 }
 
+// ════════════════ FOOD PATTERNS, WEEKLY REVIEW & PLAIN-ENGLISH NOTES (additive; reads existing data only) ════════════════
+const SUFF_DEF='A day counts as “sufficiently logged” when it has at least 3 food entries across at least 2 meal categories. It is a simple completeness check — it cannot tell whether you ate more than you logged. Days with nothing logged are skipped, never counted as zero.';
+const MC=['Breakfast','Lunch','Dinner','Snacks','Other'];
+const WKD=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+let aPatFood=null,aWkDay=null;
+function selPatFood(k){aPatFood=aPatFood===k?null:k;aOpen.patterns=true;keepScroll(render);}
+function selWkDay(d){aWkDay=aWkDay===d?null:d;aOpen.week=true;keepScroll(render);}
+function mAvg(a){return a.length?a.reduce(function(s,v){return s+v;},0)/a.length:null;}
+function sdev(a){if(a.length<2)return null;const m=mAvg(a);return Math.sqrt(a.reduce(function(s,v){return s+(v-m)*(v-m);},0)/(a.length-1));}
+function pctile(arr,p){if(!arr.length)return null;const s=arr.slice().sort(function(x,y){return x-y;}),i=(s.length-1)*p,lo=Math.floor(i),hi=Math.ceil(i);return s[lo]+(s[hi]-s[lo])*(i-lo);}
+function minClock(m){m=Math.round(((m%1440)+1440)%1440);const h=Math.floor(m/60),mm=m%60;return (h%12||12)+':'+pad2(mm)+' '+(h>=12?'PM':'AM');}
+function dayMin(ts){const d=new Date(ts);return (d.getHours()*60+d.getMinutes()-FAST_DAY_START_H*60+1440)%1440;} // minutes since the eating-day start (4 AM)
+function shClock(m){return minClock(m+FAST_DAY_START_H*60);}
+function dowOf(ds){return parseDS(ds).getDay();}
+function isWE(ds){const d=dowOf(ds);return d===0||d===6;}
+function pl(n,w){return n+' '+w+(n===1?'':'s');}
+function insBox(txt,basis,col){col=col||'#818cf8';return `<div class="insight" style="background:${col}12;border:1px solid ${col}30;align-items:flex-start"><span class="insight-icon">💡</span><span class="insight-text" style="color:#e2e8f0">${txt}<span class="note" style="display:block;margin-top:3px">${basis}</span></span></div>`;}
+function warnBox(txt){return `<div class="insight" style="background:#fbbf2410;border:1px solid #fbbf2425;margin-top:8px"><span class="insight-text" style="color:#fbbf24">${txt}</span></div>`;}
+
+// Normalises saved entries. Servings come from the "×N" suffix the app adds to names; otherwise 1.
+function patItems(a,b){
+  const out=[];
+  S.entries.forEach(function(e){
+    if(!e||!isFinite(e.timestamp))return;
+    const d=dateOf(e.timestamp);if(d<a||d>b)return;
+    const nm=String(e.name==null?'':e.name).trim()||'(unnamed)',mt=nm.match(/^(.*?)\s*×\s*(\d{1,2})$/);
+    const q=mt&&+mt[2]>=1&&mt[1]?+mt[2]:1,base=mt&&mt[1]?mt[1]:nm;
+    out.push({id:e.id,date:d,ts:e.timestamp,kcal:+e.calories||0,prot:+e.protein||0,qty:q,name:base,key:base.toLowerCase(),meal:MEALS.indexOf(e.meal)>=0?e.meal:'Other',timed:realTs(e)});
+  });
+  return out;
+}
+function patDays(items){
+  const m={};
+  items.forEach(function(x){
+    const d=m[x.date]||(m[x.date]={date:x.date,n:0,meals:{},cal:0,prot:0,mealCal:{},mealProt:{},items:[]});
+    d.n++;d.meals[x.meal]=1;d.cal+=x.kcal;d.prot+=x.prot;d.items.push(x);
+    d.mealCal[x.meal]=(d.mealCal[x.meal]||0)+x.kcal;d.mealProt[x.meal]=(d.mealProt[x.meal]||0)+x.prot;
+  });
+  Object.keys(m).forEach(function(k){m[k].ok=m[k].n>=3&&Object.keys(m[k].meals).length>=2;});
+  return m;
+}
+function entryRows(list,max){
+  const s=list.slice().sort(function(p,q){return q.ts-p.ts;});
+  return s.slice(0,max).map(function(x){return kvr(fmtShort(x.date)+' · '+(x.timed?fmtClock(x.ts):'time not recorded')+' · '+esc(x.meal),Math.round(x.kcal)+' kcal · '+x.prot.fv()+' g P'+(x.qty>1?' · ×'+x.qty:''));}).join('')+(s.length>max?`<div class="note" style="margin-top:6px">Showing the latest ${max} of ${s.length} entries.</div>`:'');
+}
+
+// ── Food Patterns & Insights ──
+function secPatterns(c){
+  const all=patItems('0000-01-01',c.t);
+  if(!all.length)return secCard('patterns',{title:'Food Patterns &amp; Insights',body:noData('Log some meals and your most-eaten foods, protein sources and meal timing will appear here.')});
+  const a=c.a,b=c.t,per=all.filter(function(x){return x.date>=a;}),dmp=patDays(per),dk=Object.keys(dmp).sort(),okDays=dk.filter(function(k){return dmp[k].ok;}).map(function(k){return dmp[k];});
+  const plabel=fmtShort(a)+' – '+fmtShort(b),basis=plabel+' · '+pl(per.length,'entry').replace('entrys','entries')+' on '+pl(dk.length,'logged day')+' ('+okDays.length+' sufficiently logged)';
+  const ins=[];
+
+  // A. frequency (fixed trailing 7 / 30 days)
+  const a7=addDays(c.t,-6),a30=addDays(c.t,-29),fm={};
+  all.forEach(function(x){if(x.date<a30)return;const f=fm[x.key]||(fm[x.key]={key:x.key,name:x.name,n30:0,n7:0,s30:0,cal:0,prot:0});f.n30++;f.s30+=x.qty;f.cal+=x.kcal;f.prot+=x.prot;if(x.date>=a7)f.n7++;});
+  const fr=Object.keys(fm).map(function(k){return fm[k];}).sort(function(p,q){return q.n30-p.n30||q.n7-p.n7||q.s30-p.s30;}).slice(0,8);
+  const freqHTML=fr.length?fr.map(function(f){
+    const on=aPatFood===f.key;
+    return `<button class="pt-row ${on?'on':''}" data-k="${esc(encodeURIComponent(f.key))}" onclick="selPatFood(decodeURIComponent(this.dataset.k))" aria-expanded="${on}"><div class="pt-top"><span>${esc(f.name)}</span><span>${f.n30}× <span style="color:#64748b;font-weight:500">30d</span> · ${f.n7}× <span style="color:#64748b;font-weight:500">7d</span></span></div><div class="pt-sub">${pl(f.s30,'serving')} in 30 days · avg ${fmtN(f.cal/f.s30)} kcal &amp; ${(f.prot/f.s30).fv()} g protein per serving</div>${on?`<div style="margin-top:8px" onclick="event.stopPropagation()">${entryRows(all.filter(function(x){return x.key===f.key;}),20)}</div>`:''}</button>`;}).join(''):noData('Nothing logged in the last 30 days.');
+
+  // B. protein
+  const pf={};per.forEach(function(x){if(x.prot>0){const f=pf[x.key]||(pf[x.key]={name:x.name,prot:0,n:0});f.prot+=x.prot;f.n++;}});
+  const pfl=Object.keys(pf).map(function(k){return pf[k];}).sort(function(p,q){return q.prot-p.prot;}),totP=per.reduce(function(s,x){return s+x.prot;},0);
+  if(dk.length>=5&&pfl.length>=3&&totP>0){const t3=pfl.slice(0,3),sh=t3.reduce(function(s,f){return s+f.prot;},0)/totP*100;ins.push(insBox('These three foods contributed the most recorded protein: '+t3.map(function(f){return '<b>'+esc(f.name)+'</b>';}).join(', ')+' — together '+Math.round(sh)+'% of the '+fmtN(totP)+' g logged.',basis));}
+  const shr={};MC.forEach(function(m){shr[m]=[];});
+  okDays.forEach(function(d){if(d.prot<10)return;MC.forEach(function(m){shr[m].push((d.mealProt[m]||0)/d.prot*100);});});
+  const shN=shr.Breakfast.length,shAvg=MC.map(function(m){return {m:m,v:mAvg(shr[m])};}).filter(function(x){return x.v!=null&&(x.m!=='Other'||x.v>0);}).sort(function(p,q){return q.v-p.v;});
+  if(shN>=7&&shAvg.length){const top=shAvg[0];ins.push(insBox(top.v>=45?'Your logged protein is concentrated in <b>'+top.m+'</b> (on average '+Math.round(top.v)+'% of the day’s protein).':'Your logged protein is spread fairly evenly across meals; the largest share is <b>'+top.m+'</b> ('+Math.round(top.v)+'% on average).','Calculated over '+pl(shN,'sufficiently logged day')+', '+plabel+'.'));}
+  const gm={};per.forEach(function(x){const k=x.date+'|'+x.meal,g=gm[k]||(gm[k]={date:x.date,meal:x.meal,prot:0,n:0,names:[]});g.prot+=x.prot;g.n++;g.names.push(x.name);});
+  const big=Object.keys(gm).map(function(k){return gm[k];}).sort(function(p,q){return q.prot-p.prot;})[0];
+  let opp='';
+  if(shN>=7){
+    const cand=['Breakfast','Lunch','Dinner'].map(function(m){const pres=okDays.filter(function(d){return d.meals[m];});return {m:m,pres:pres.length,v:mAvg(pres.filter(function(d){return d.prot>=10;}).map(function(d){return (d.mealProt[m]||0)/d.prot*100;}))};}).filter(function(x){return x.pres>=Math.ceil(okDays.length/2)&&x.v!=null;}).sort(function(p,q){return p.v-q.v;});
+    const hp=foodList().filter(function(f){return f.protein>=10;}).sort(function(p,q){return q.protein-p.protein;}).slice(0,3);
+    if(cand.length&&cand[0].v<15)opp=`<div class="note" style="margin-top:8px"><b style="color:#e2e8f0">Possible opportunity:</b> on days you log ${cand[0].m}, it averages about ${Math.round(cand[0].v)}% of that day’s protein (${pl(cand[0].pres,'day')}). Meals don’t need equal protein; if you want a more even spread, a protein source there is one option${hp.length?' — e.g. from your food list: '+hp.map(function(f){return esc(f.name)+' ('+f.protein+' g)';}).join(', '):''}.</div>`;
+  }
+  const protHTML=`${pfl.length?pfl.slice(0,5).map(function(f){return kvr(esc(f.name),fmtN(f.prot)+' g · '+Math.round(f.prot/totP*100)+'% <span style="color:#64748b;font-weight:500">('+pl(f.n,'entry').replace('entrys','entries')+')</span>');}).join(''):noData('No protein logged in this range.')}
+    ${big&&big.prot>0?`<div class="sub-t">Largest protein meal <span class="note">(entries sharing a date and meal label)</span></div>${kvr(fmtShort(big.date)+' · '+esc(big.meal),fmtN(big.prot)+' g')}<div class="note">${pl(big.n,'item')}: ${big.names.slice(0,4).map(esc).join(', ')}${big.names.length>4?'…':''}</div>`:''}
+    <div class="sub-t">Average share of daily protein by meal</div>${shN>=7?shAvg.map(function(x){return kvr(x.m,Math.round(x.v)+'%');}).join('')+`<div class="note">${pl(shN,'sufficiently logged day')} with at least 10 g protein.</div>`:noData('Needs at least 7 sufficiently logged days in this range (you have '+okDays.length+').')}${opp}`;
+
+  // C. timing
+  const tm=per.filter(function(x){return x.timed&&x.kcal>0;}),untimed=per.filter(function(x){return !x.timed&&x.kcal>0;}).length;
+  const catT=MC.map(function(m){const v=tm.filter(function(x){return x.meal===m;}).map(function(x){return dayMin(x.ts);});return {m:m,n:v.length,med:pctile(v,.5),lo:pctile(v,.25),hi:pctile(v,.75)};}).filter(function(x){return x.n>0&&(x.m!=='Other'||x.n>=5);});
+  const catHTML=catT.map(function(x){return x.n>=5?kvr(x.m,shClock(x.med)+' <span style="color:#64748b;font-weight:500">('+shClock(x.lo)+'–'+shClock(x.hi)+', n='+x.n+')</span>'):kvr(x.m,'<span style="color:#64748b;font-weight:500">only '+x.n+' timed — need 5</span>');}).join('');
+  const lateF=function(x){const h=new Date(x.ts).getHours();return h>=21||h<FAST_DAY_START_H;},late=tm.filter(lateF),lateDays={};late.forEach(function(x){lateDays[eatDay(x.ts)]=1;});
+  const totTmK=tm.reduce(function(s,x){return s+x.kcal;},0),lateK=late.reduce(function(s,x){return s+x.kcal;},0);
+  if(tm.length>=10)ins.push(insBox(late.length?'<b>'+late.length+' of '+tm.length+'</b> timed entries ('+Math.round(late.length/tm.length*100)+'%) were logged after 9 PM, on '+pl(Object.keys(lateDays).length,'day')+' — about '+Math.round(lateK/Math.max(totTmK,1)*100)+'% of their recorded calories.':'None of your '+tm.length+' timed entries were logged after 9 PM.','Uses entry timestamps (9 PM – 4 AM); '+plabel+'.'));
+  const ed={};per.forEach(function(x){if(!(x.kcal>0))return;const k=eatDay(x.ts),d=ed[k]||(ed[k]={date:k,ev:[],un:0});if(x.timed)d.ev.push(x.ts);else d.un++;});
+  const rel=Object.keys(ed).map(function(k){return ed[k];}).filter(function(d){return d.un===0&&d.ev.length>0;}).map(function(d){return {date:d.date,first:dayMin(Math.min.apply(null,d.ev)),last:dayMin(Math.max.apply(null,d.ev))};});
+  const wdR=rel.filter(function(r){return !isWE(r.date);}),weR=rel.filter(function(r){return isWE(r.date);});
+  const sdW=sdev(wdR.map(function(r){return r.first;})),sdE=sdev(weR.map(function(r){return r.first;}));
+  if(wdR.length>=4&&weR.length>=4&&Math.abs(sdW-sdE)>=15)ins.push(insBox('Your first logged meal time varies more on <b>'+(sdE>sdW?'weekends':'weekdays')+'</b> (typical spread ±'+Math.round(Math.max(sdE,sdW))+' min vs ±'+Math.round(Math.min(sdE,sdW))+' min).','Standard deviation of first timed entry; '+wdR.length+' weekday and '+weR.length+' weekend days with fully timed entries, '+plabel+'.'));
+  const rng=function(arr,k){return arr.length?shClock(Math.min.apply(null,arr.map(function(r){return r[k];})))+' – '+shClock(Math.max.apply(null,arr.map(function(r){return r[k];}))):'—';};
+  const timeHTML=`${catHTML?catHTML:noData('No entries with a recorded time in this range.')}
+    <div class="note" style="margin-top:4px">Grouped by meal label, but times come from each entry’s timestamp. “Middle half” range is shown in brackets.</div>
+    <div class="sub-t">Day-to-day variation <span class="note">(days where every entry has a time)</span></div>
+    ${rel.length>=5?kvr('First meal, typical',shClock(pctile(rel.map(function(r){return r.first;}),.5)))+kvr('First meal, earliest – latest',rng(rel,'first'))+kvr('Last meal, typical',shClock(pctile(rel.map(function(r){return r.last;}),.5)))+kvr('Last meal, earliest – latest',rng(rel,'last'))+kvr('First meal spread, weekdays vs weekends',(sdW==null||wdR.length<4?'n/a':'±'+Math.round(sdW)+' min')+' vs '+(sdE==null||weR.length<4?'n/a':'±'+Math.round(sdE)+' min'))+`<div class="note">${rel.length} days · ${wdR.length} weekday, ${weR.length} weekend (≥ 4 of each needed to compare).</div>`:noData('Needs at least 5 fully timed days (you have '+rel.length+').')}
+    ${kvr('Entries after 9 PM',tm.length?late.length+' of '+tm.length+' timed':'—')}
+    ${untimed?warnBox(pl(untimed,'entry').replace('entrys','entries')+' in this range have no recorded time (for example entries added for a past date without a time) and are left out of timing results. Nothing is guessed.'):''}`;
+
+  // D. calories
+  const totK=per.reduce(function(s,x){return s+x.kcal;},0),cf={};
+  per.forEach(function(x){const f=cf[x.key]||(cf[x.key]={name:x.name,kcal:0,serv:0,n:0});f.kcal+=x.kcal;f.serv+=x.qty;f.n++;});
+  const cfl=Object.keys(cf).map(function(k){return cf[k];}),topK=cfl.slice().sort(function(p,q){return q.kcal-p.kcal;}).slice(0,5);
+  const hiK=cfl.filter(function(f){return f.n>=2;}).sort(function(p,q){return q.kcal/q.serv-p.kcal/p.serv;}).slice(0,3);
+  const mk={};per.forEach(function(x){mk[x.meal]=(mk[x.meal]||0)+x.kcal;});
+  const mkl=Object.keys(mk).map(function(m){return {m:m,k:mk[m]};}).sort(function(p,q){return q.k-p.k;});
+  if(dk.length>=5&&totK>0&&mkl.length>=2)ins.push(insBox('<b>'+mkl[0].m+'</b> contributed the most recorded calories ('+Math.round(mkl[0].k/totK*100)+'% of '+fmtN(totK)+' kcal).','Calculated over '+plabel+'; entries labelled “Other” have no meal category.'));
+  const wk={};okDays.forEach(function(d){const w=dowOf(d.date);(wk[w]||(wk[w]=[])).push(d);});
+  const wdRows=[1,2,3,4,5,6,0].filter(function(w){return wk[w]&&wk[w].length>=3;}).map(function(w){return {w:w,n:wk[w].length,v:mAvg(wk[w].map(function(d){return d.cal;}))};});
+  const mxv=Math.max.apply(null,wdRows.map(function(r){return r.v;}).concat([1]));
+  const snD=okDays.filter(function(d){return !isWE(d.date);}).map(function(d){return d.mealCal.Snacks||0;}),snE=okDays.filter(function(d){return isWE(d.date);}).map(function(d){return d.mealCal.Snacks||0;});
+  if(snD.length>=4&&snE.length>=4){const mw=mAvg(snD),me=mAvg(snE);if(Math.abs(me-mw)>=50&&Math.abs(me-mw)>=0.2*Math.min(me,mw||1))ins.push(insBox('Your average recorded snack intake is higher on <b>'+(me>mw?'weekends':'weekdays')+'</b> ('+fmtN(Math.max(me,mw))+' vs '+fmtN(Math.min(me,mw))+' kcal per sufficiently logged day).','Compares '+snE.length+' weekend and '+snD.length+' weekday days, '+plabel+'. Days with no snack count as 0 snack kcal.'));}
+  const calHTML=`${topK.length?topK.map(function(f){return kvr(esc(f.name),fmtN(f.kcal)+' kcal · '+Math.round(f.kcal/Math.max(totK,1)*100)+'%');}).join(''):noData('No calories logged in this range.')}
+    ${hiK.length?`<div class="sub-t">Higher-calorie servings, in context</div>${hiK.map(function(f){return kvr(esc(f.name),'avg '+fmtN(f.kcal/f.serv)+' kcal per serving <span style="color:#64748b;font-weight:500">· '+pl(f.n,'entry').replace('entrys','entries')+'</span>');}).join('')}<div class="note">Serving sizes are whatever you logged. Calorie-dense foods aren’t good or bad in themselves — this only shows where recorded calories come from.</div>`:''}
+    <div class="sub-t">By meal category</div>${mkl.map(function(x){return kvr(x.m,fmtN(x.k)+' kcal · '+Math.round(x.k/Math.max(totK,1)*100)+'%');}).join('')||noData('Nothing to show.')}
+    <div class="sub-t">Average logged calories by weekday <span class="note">(sufficiently logged days)</span></div>
+    ${wdRows.length>=5?wdRows.map(function(r){return `<div class="mr2"><div class="mr2-t"><span>${WKD[r.w]}</span><span><b>${fmtN(r.v)} kcal</b> <span class="note">n=${r.n}</span></span></div>${progressBarHTML(r.v,mxv,'#f97316',6)}</div>`;}).join('')+'<div class="note">Weekdays with fewer than 3 sufficiently logged days are hidden.</div>':noData('Needs at least 3 sufficiently logged days for 5 or more weekdays; not enough data yet ('+wdRows.length+' qualify).')}`;
+
+  const body=`<div class="note">${basis}</div>
+    <div style="margin-top:10px">${ins.length?ins.slice(0,4).join(''):noData('Not enough data for pattern insights yet. Most need about 5–10 logged days in this range — '+okDays.length+' sufficiently logged so far. Try a longer range or keep logging.')}</div>
+    <div class="note" style="margin-bottom:10px">Observations describe what you logged, not what caused changes in weight or fasting. ${SUFF_DEF}</div>`;
+  const detail=`<div class="sub-t">Most frequently logged <span class="note">(last 30 days · tap a food for its entries)</span></div>${freqHTML}<div class="note">“×” counts log entries; servings add up the quantity in each entry (from “×N” in the name).</div>
+    <div class="sub-t">Protein distribution <span class="note">(${plabel})</span></div>${protHTML}
+    <div class="sub-t">Meal-time patterns <span class="note">(${plabel})</span></div>${timeHTML}
+    <div class="sub-t">Calorie patterns <span class="note">(${plabel})</span></div>${calHTML}`;
+  return secCard('patterns',{title:'Food Patterns &amp; Insights',body:body,detail:detail});
+}
+
+// ── Your Week in Review ──
+function secWeek(c){
+  const t=c.t,b=addDays(t,-1),a=addDays(b,-6),pb=addDays(a,-1),pa=addDays(pb,-6);
+  const items=patItems(pa,b),dm=patDays(items);
+  const win=function(x,y){
+    const rows=dateList(x,y).map(function(d){return {date:d,info:dm[d]||null};}),ok=rows.filter(function(r){return r.info&&r.info.ok;});
+    const avg=function(f){return ok.length?ok.reduce(function(s,r){return s+f(r.info);},0)/ok.length:null;};
+    return {a:x,b:y,rows:rows,logged:rows.filter(function(r){return r.info;}).length,ok:ok.length,avgCal:avg(function(i){return i.cal;}),avgProt:avg(function(i){return i.prot;}),
+      calOK:ok.filter(function(r){return r.info.cal<=c.gc*1.05;}).length,protOK:ok.filter(function(r){return r.info.prot>=c.gp*0.9;}).length};
+  };
+  const cur=win(a,b),prv=win(pa,pb),title='Your Week in Review',rangeTxt=fmtShort(a)+' – '+fmtShort(b),prvTxt=fmtShort(pa)+' – '+fmtShort(pb);
+  const wAvg=function(ser,x,y){const v=ser.filter(function(p){return p.date>=x&&p.date<=y;});return {n:v.length,avg:v.length?mAvg(v.map(function(p){return p.v;})):null};};
+  const wc=wAvg(c.ws,a,b),wp=wAvg(c.ws,pa,pb),wDiff=wc.n>=2&&wp.n>=2?wc.avg-wp.avg:null;
+  const rl=rolling7(c.ws.filter(function(p){return p.date<=b;})),rlNow=rl.length&&rl[rl.length-1].date>=a?rl[rl.length-1]:null;
+  const xs=c.xs.filter(function(p){return p.date<=t&&daysBetween(p.date,t)<=28;}),xa=xs.length>=2?xs[xs.length-1]:null,xb=xs.length>=2?xs[xs.length-2]:null,xOK=xa&&xb&&daysBetween(xb.date,xa.date)>=5;
+  const F=computeFasts(),fin=function(x,y){return F.complete.filter(function(i){return i.endDay>=x&&i.endDay<=y;});},fc=fin(a,b),fp=fin(pa,pb),fu=F.uncertain.filter(function(u){return u.endDay>=a&&u.endDay<=b;}).length;
+  const fAvg=fc.length?mAvg(fc.map(function(i){return i.mins;})):null,fpAvg=fp.length?mAvg(fp.map(function(i){return i.mins;})):null;
+  const bandCt={};fc.forEach(function(i){bandCt[i.band.id]=(bandCt[i.band.id]||0)+1;});
+  const wkItems=items.filter(function(x){return x.date>=a;}),untimed=wkItems.filter(function(x){return !x.timed&&x.kcal>0;}).length;
+
+  const need=Math.max(0,3-cur.ok);
+  if(!items.length&&!c.ws.length)return secCard('week',{title:title,body:noData('Your weekly summary will appear once you have logged food on at least 3 days in a week. Nothing logged in the last 7 completed days yet.')});
+
+  const dchipTxt=function(v,pv,dec,unit){if(v==null||pv==null)return '';const d=v-pv;return Math.abs(d)<(dec===0?0.5:0.05)?'no change vs prev week':sgn(d,dec)+unit+' vs prev week';};
+  const obs=[];
+  if(cur.ok>=3){
+    if(prv.ok>=3&&Math.abs(cur.avgProt-prv.avgProt)>=5)obs.push('Your average recorded protein '+(cur.avgProt>prv.avgProt?'increased':'decreased')+' to '+fmtN(cur.avgProt)+' g (from '+fmtN(prv.avgProt)+' g). You reached ≥ 90% of your '+c.gp+' g goal on '+cur.protOK+' of '+cur.ok+' eligible days.');
+    else obs.push('You reached ≥ 90% of your '+c.gp+' g protein goal on '+cur.protOK+' of '+cur.ok+' eligible days (average '+fmtN(cur.avgProt)+' g).');
+    const dc=cur.avgCal-c.gc;
+    obs.push('Average recorded calories were '+fmtN(cur.avgCal)+' kcal, '+(Math.abs(dc)<=c.gc*0.05?'close to':fmtN(Math.abs(dc))+' kcal '+(dc>0?'above':'below'))+' your '+c.gc+' kcal target'+(prv.ok>=3?' (previous week '+fmtN(prv.avgCal)+' kcal)':'')+'.');
+  }
+  if(wDiff!=null)obs.push('Your 7-day weight average is '+(Math.abs(wDiff)<0.2?'roughly steady':(wDiff<0?'slightly lower':'slightly higher')+' ('+sgn(wDiff,1)+' kg)')+' versus last week. Short-term changes can reflect water and glycogen.');
+  else if(c.ws.length)obs.push('Weight trend needs at least 2 weigh-ins in each of the two weeks (this week '+wc.n+', last week '+wp.n+'), so no trend is stated.');
+  if(fc.length>=3)obs.push('Your overnight gap between logged meals averaged '+fmtDur(fAvg)+' across '+fc.length+' measurable nights'+(fu?' ('+fu+' not measurable)':'')+'. This is calculated from logged times, not a verified fast.');
+  const obsShow=obs.slice(0,3);
+  // one practical focus, picked from the data
+  let focus;
+  if(cur.ok<5)focus='Log meals on more days — only '+cur.ok+' of 7 days were sufficiently logged, so averages are less reliable. Reaching 5 or more makes next week’s review more meaningful.';
+  else if(untimed>=Math.max(3,wkItems.length*0.3))focus=untimed+' of '+wkItems.length+' entries this week have no recorded time. Adding times when you log improves the meal-timing and overnight-interval results.';
+  else if(cur.protOK<cur.ok/2){
+    const ms=['Breakfast','Lunch','Dinner'].map(function(m){const v=cur.rows.filter(function(r){return r.info&&r.info.ok&&r.info.meals[m];}).map(function(r){return r.info.mealProt[m]||0;});return {m:m,n:v.length,v:mAvg(v)};}).filter(function(x){return x.n>=3;}).sort(function(p,q){return p.v-q.v;});
+    focus=ms.length?'Protein: you reached your goal on '+cur.protOK+' of '+cur.ok+' days. '+ms[0].m+' had the least recorded protein (about '+fmtN(ms[0].v)+' g on '+ms[0].n+' days) — a protein source there is one option, if you want one.':'Protein: you reached your goal on '+cur.protOK+' of '+cur.ok+' days. Check which meals tend to be lowest in protein.';
+  }else if(cur.calOK<cur.ok/2)focus='Calories were above your target (+5%) on '+(cur.ok-cur.calOK)+' of '+cur.ok+' eligible days. Look at the Food Patterns card to see which meals contribute most.';
+  else focus='Keep logging the way you did this week — you have enough complete days for dependable averages.';
+
+  const body=`<div class="note">${rangeTxt} · compared with ${prvTxt} · today excluded (still in progress)</div>
+    ${cur.ok<3?`<div style="margin-top:10px">${insBox('Not enough sufficiently logged days yet: you have <b>'+cur.ok+' of 7</b> and need at least 3 — '+pl(need,'more day')+' of logging (3+ entries across 2+ meals).','Averages from fewer days would be misleading, so none are shown. '+(cur.logged>cur.ok?cur.logged-cur.ok+' partly logged day(s) did not count.':''),'#fbbf24')}</div>`:
+    miniRow([['Avg calories',fmtN(cur.avgCal)+' kcal','#f97316'],['Avg protein',fmtN(cur.avgProt)+' g','#22d3ee'],['Eligible days',cur.ok+' / 7','#34d399'],['7-day weight avg',wDiff!=null?sgn(wDiff,1)+' kg':'—',wDiff!=null?chgColor(wDiff,'weight'):'#64748b']])}
+    ${cur.ok>=3?`<div class="note" style="margin-top:6px">Target ${c.gc} kcal · ${c.gp} g protein. ${dchipTxt(cur.avgCal,prv.ok>=3?prv.avgCal:null,0,' kcal')?'Calories: '+dchipTxt(cur.avgCal,prv.ok>=3?prv.avgCal:null,0,' kcal')+'. ':''}${dchipTxt(cur.avgProt,prv.ok>=3?prv.avgProt:null,0,' g')?'Protein: '+dchipTxt(cur.avgProt,prv.ok>=3?prv.avgProt:null,0,' g')+'.':''}</div>`:''}
+    ${obsShow.length?'<div style="margin-top:10px">'+obsShow.map(function(o){return insBox(o,'Observation from your saved data');}).join('')+'</div>':''}
+    <div class="insight" style="background:#34d39912;border:1px solid #34d39930;align-items:flex-start"><span class="insight-icon">🎯</span><span class="insight-text" style="color:#e2e8f0"><b>Focus for next week:</b> ${focus}</span></div>`;
+
+  const dayRows=cur.rows.map(function(r){
+    const i=r.info,on=aWkDay===r.date,lbl=parseDS(r.date).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+    return `<button class="pt-row ${on?'on':''}" onclick="selWkDay('${r.date}')" aria-expanded="${on}"><div class="pt-top"><span>${lbl}</span><span>${i?fmtN(i.cal)+' kcal · '+fmtN(i.prot)+' g':'<span style="color:#64748b;font-weight:500">not logged</span>'}</span></div><div class="pt-sub">${i?pl(i.n,'entry').replace('entrys','entries')+' · '+(i.ok?'counted':'not counted (needs 3+ entries across 2+ meals)'):'skipped — not treated as zero or as a fast'}</div>${on&&i?`<div style="margin-top:8px" onclick="event.stopPropagation()">${entryRows(i.items,30)}</div>`:''}</button>`;}).join('');
+  const bands=FAST_BANDS.filter(function(x){return bandCt[x.id];}).map(function(x){return `<span class="chip" style="color:${x.color};background:${x.color}1f;margin:0 6px 6px 0">${x.name}: ${bandCt[x.id]}</span>`;}).join('');
+  const detail=`<div class="sub-t">This week vs last week</div>
+    ${kvr('Avg calories (recorded)',cur.ok?fmtN(cur.avgCal)+' kcal <span style="color:#64748b;font-weight:500">· n='+cur.ok+'</span>':'—')}${kvr('Last week',prv.ok?fmtN(prv.avgCal)+' kcal <span style="color:#64748b;font-weight:500">· n='+prv.ok+'</span>':'not enough days')}
+    ${kvr('Avg protein (recorded)',cur.ok?fmtN(cur.avgProt)+' g':'—')}${kvr('Last week',prv.ok?fmtN(prv.avgProt)+' g':'not enough days')}
+    ${kvr('Days within calorie target (≤ +5%)',cur.ok?cur.calOK+' of '+cur.ok:'—')}${kvr('Days protein ≥ 90% of goal',cur.ok?cur.protOK+' of '+cur.ok:'—')}
+    <div class="sub-t">Logging consistency</div>
+    ${kvr('Days with any entry',cur.logged+' of 7')}${kvr('Sufficiently logged days',cur.ok+' of 7')}${kvr('Last week (any / sufficient)',prv.logged+' / '+prv.ok)}
+    <div class="note">${SUFF_DEF}</div>
+    <div class="sub-t">Weight <span class="note">(measured; averages are calculated)</span></div>
+    ${kvr('Weigh-ins this week / last week',wc.n+' / '+wp.n)}${kvr('Average this week / last week',(wc.n?wc.avg.fv()+' kg':'—')+' / '+(wp.n?wp.avg.fv()+' kg':'—'))}${rlNow?kvr('Rolling 7-day average (latest)',rlNow.v.fv()+' kg'):''}
+    <div class="note">${wDiff!=null?'Change in weekly averages: '+sgn(wDiff,2)+' kg. ':''}Trends need 2+ weigh-ins in each week; a single reading can swing with water and glycogen.</div>
+    <div class="sub-t">Waist</div>${xOK?kvr('Change between measurements',sgn(xa.v-xb.v,1)+' cm <span style="color:#64748b;font-weight:500">('+fmtShort(xb.date)+' → '+fmtShort(xa.date)+')</span>'):noData('Shown only when two waist measurements at least 5 days apart exist within the last 28 days.')}
+    <div class="sub-t">Overnight fasting intervals <span class="note">(calculated from logged times)</span></div>
+    ${fc.length?kvr('Average gap',fmtDur(fAvg)+' <span style="color:#64748b;font-weight:500">· '+fc.length+' nights</span>')+kvr('Last week',fpAvg!=null?fmtDur(fpAvg)+' · '+fp.length+' nights':'not enough nights')+`<div style="margin-top:8px">${bands}</div>`:noData('No measurable nights this week. A night needs fully timed food entries on two consecutive days.')}
+    ${fu?`<div class="note">${pl(fu,'interval')} could not be measured (missing days or untimed entries) and are not counted as fasts.</div>`:''}
+    <div class="sub-t">Days this week <span class="note">(tap for entries)</span></div>${dayRows}
+    <div class="note" style="margin-top:10px"><b>Observed:</b> logged calories and protein, weigh-ins, waist measurements. <b>Calculated:</b> averages, weekly changes and fasting gaps. The fasting categories are not verified fasts. ${FAST_SAFETY}</div>`;
+  return secCard('week',{title:title,body:body,detail:detail});
+}
+
+// ── Plain-English notes appended to existing cards (their calculations are untouched) ──
+function xplain(html,txt,warn){return html.replace(/<\/section>\s*$/,'<div class="plain"><span>ⓘ</span><div>'+txt+(warn?'<div style="color:#fbbf24;margin-top:4px">'+warn+'</div>':'')+'</div></div></section>');}
+function addPlain(c,cur,prv,s){
+  const n=cur.n,span=c.foodKeys.length?daysBetween(c.fa,c.t)+1:0,cmp=prv&&prv.n&&n?' Compared with the previous '+c.days+' days ('+prv.n+' logged).':(c.prev?'':' No earlier period exists to compare yet.');
+  const lowCov=span>0&&n/span<0.6?'Only '+n+' of '+span+' days in this range have food logs, so averages may not represent a typical day.':(n>0&&n<5?'Based on only '+n+' logged day'+(n===1?'':'s')+' — treat as rough.':'');
+  const wr=inRange(c.ws,aRange),f=s.fasting;
+  return {
+    overview:xplain(s.overview,'The rings show the share of logged days that met each goal; the tiles are averages over logged days only.'+cmp,lowCov),
+    weight:xplain(s.weight,wr.length<3?'A trend needs at least 3 weigh-ins; with '+wr.length+' here, the change shown is a difference between readings, not a trend.':'Single weigh-ins move with water and glycogen, so read direction from the 7-day average line. Weigh-ins in range: '+wr.length+'. These are measured values; the weekly rate is calculated.',''),
+    energy:xplain(s.energy,'Compares your logged intake with your calorie target. Unlogged days are skipped, not counted as zero. Deficit figures are estimates; calories and weights are recorded values.'+cmp,lowCov),
+    nutrition:xplain(s.nutrition,'Average protein per logged day against your goal. Carbs and fats have no target, so only averages and share of calories are shown.'+cmp,lowCov),
+    consistency:xplain(s.consistency,'A day counts as logged with at least one entry. Your Week in Review applies a stricter “sufficiently logged” check (3+ entries across 2+ meals).',''),
+    fasting:f
+  };
+}
+
 function renderAnalytics(){
   if(bkFlash)aOpen.data=true;
   const c=aCtx(),cur=aAgg(c,c.a,c.t),prv=c.prev?aAgg(c,c.prev.a,c.prev.b):null;
   let h=`<div class="a-bar"><div class="a-seg" role="group" aria-label="Date range">${RANGES.map(function(r){return `<button class="${aRange===r[0]?'on':''}" onclick="setARange(${r[0]})" aria-pressed="${aRange===r[0]}">${r[1]}</button>`;}).join('')}</div></div>`;
-  h+=secOverview(c,cur,prv)+secWeight(c)+secEnergy(c,cur,prv)+secNutrition(c,cur,prv)+secConsistency(c,cur)+secWaist(c)+secGoal(c)+secPeriod(c)+secData();
+  const sx={overview:secOverview(c,cur,prv),weight:secWeight(c),energy:secEnergy(c,cur,prv),nutrition:secNutrition(c,cur,prv),fasting:secFasting(c),consistency:secConsistency(c,cur)};
+  let px;try{px=addPlain(c,cur,prv,sx);}catch(e){console.error(e);px=sx;}
+  const safe=function(fn,id,t){try{return fn();}catch(e){console.error(e);return '<section class="acard"><div class="ac-top"><div class="ac-title" style="cursor:default">'+t+'</div></div><div class="note" style="padding-bottom:12px">Couldn’t be calculated from the saved data.</div></section>';}};
+  h+=px.overview+safe(function(){return secWeek(c);},'week','Your Week in Review')+px.weight+px.energy+px.nutrition+safe(function(){return secPatterns(c);},'patterns','Food Patterns &amp; Insights')+px.fasting+px.consistency+secWaist(c)+secGoal(c)+secPeriod(c)+secData();
   requestAnimationFrame(function(){setHH();if(aJump){const el=document.getElementById('ac-'+aJump);aJump=null;if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}});
   return h;
 }
@@ -2096,7 +2449,11 @@ const THEMES=[
   {id:'aurora',name:'Aurora',d:'Drifting northern lights',bg:'linear-gradient(135deg,#064e3b,#0c2a4a)',dots:['#10b981','#06b6d4'],meta:'#02100f'},
   {id:'neon',name:'Cyber Neon',d:'Glowing grid, magenta & cyan',bg:'linear-gradient(135deg,#3b0764,#04202b)',dots:['#ff2bd6','#00e5ff'],meta:'#07020f'},
   {id:'solar',name:'Solar Flare',d:'Rising embers on deep red',bg:'linear-gradient(135deg,#7c2d12,#450a0a)',dots:['#f97316','#ef4444'],meta:'#0f0503'},
-  {id:'space',name:'Deep Space',d:'Twinkling stars & shooting comets',bg:'linear-gradient(135deg,#2e1065,#01010a)',dots:['#7c3aed','#22d3ee'],meta:'#01010a'}
+  {id:'space',name:'Deep Space',d:'Twinkling stars & shooting comets',bg:'linear-gradient(135deg,#2e1065,#01010a)',dots:['#7c3aed','#22d3ee'],meta:'#01010a'},
+  {id:'lava',name:'Lava Lamp',d:'Molten blobs that chase your finger',bg:'linear-gradient(135deg,#4a0d2e,#170512)',dots:['#ff5a4e','#ffb703'],meta:'#170512'},
+  {id:'blueprint',name:'Blueprint',d:'Drafting grid with a live crosshair',bg:'linear-gradient(135deg,#0b4aa8,#05306f)',dots:['#7dd3fc','#e0f2fe'],meta:'#05306f'},
+  {id:'tide',name:'Tidepool',d:'Touch the water: ripples and bubbles that pop',bg:'linear-gradient(135deg,#0f4c6e,#2a1048)',dots:['#5eead4','#f9a8d4'],meta:'#030f1f'},
+  {id:'vital',name:'Vital Sign',d:'A heartbeat monitor that spikes when you tap',bg:'linear-gradient(135deg,#052e1c,#1a0509)',dots:['#39ff88','#ff3b5c'],meta:'#030a07'}
 ];
 function uiGet(k,fb){try{const v=localStorage.getItem(k);return v==null?fb:v;}catch(e){return fb;}}
 function uiSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
@@ -2213,6 +2570,244 @@ function checkCelebrate(){
     if(p>=gp&&uiGet('ftui_cel','')!==t){uiSet('ftui_cel',t);confetti();buzz([20,40,20]);showToast('🎉 Protein goal hit for today!');}
   }catch(e){}
 }
+
+// ════════════════ FASTING STAGES & ANALYSIS (derived only from real logged timestamps) ════════════════
+// Tracking categories only — NOT validated metabolic stages. Edit this array to change the bands.
+const FAST_DAY_START_H=4; // food logged before 4 AM counts toward the previous eating day
+const FAST_BANDS=[
+  {id:'b0',min:0,   name:'Overnight fasting',        pat:null,       short:'<12h',color:'#64748b',ex:'A typical overnight gap between your last and first logged food. Not necessarily an intermittent-fasting schedule.'},
+  {id:'b1',min:720, name:'12:12 pattern',            pat:'12:12',    short:'12h', color:'#38bdf8',ex:'About 12 hours between logged intake — in line with a 12-hour fasting / ~12-hour eating window.'},
+  {id:'b2',min:840, name:'14:10 pattern',            pat:'14:10',    short:'14h', color:'#22d3ee',ex:'About 14 hours between logged intake — in line with a 14-hour fasting / ~10-hour eating window.'},
+  {id:'b3',min:960, name:'16:8 pattern',             pat:'16:8',     short:'16h', color:'#818cf8',ex:'About 16 hours between logged intake — in line with a 16-hour fasting / ~8-hour eating window.'},
+  {id:'b4',min:1080,name:'Extended daily fast',      pat:null,       short:'18h', color:'#a78bfa',ex:'A longer gap between logged intake. Shown for tracking only — a longer gap is not necessarily better.'},
+  {id:'b5',min:1200,name:'Very long fasting interval',pat:null,      short:'20h', color:'#fbbf24',ex:'A very long gap between logged intake. Prolonged fasting is not suitable for everyone.',warn:true},
+  {id:'b6',min:1440,name:'Prolonged fasting interval',pat:null,      short:'24h+',color:'#fb923c',ex:'A gap of 24 hours or more between logged intake. Shown for information only, not as a goal to extend.',warn:true}
+];
+const FAST_SAFETY='Categories are based only on gaps between your logged food. They are not verified fasts and not validated biological or metabolic stages, and a gap does not prove nothing was consumed. A longer gap is not a better one. Prolonged fasting is not suitable for everyone (for example if you are pregnant, under 18, have diabetes or a history of disordered eating, or take certain medicines) — please speak to a clinician before extending fasts.';
+let aFastCat=null,aFastDay=null,aFastAll=false;
+function selFastCat(id){aFastCat=aFastCat===id?null:id;aFastDay=null;aOpen.fasting=true;keepScroll(render);}
+function selFastDay(d){aFastDay=aFastDay===d?null:d;aFastCat=null;keepScroll(render);}
+function toggleFastAll(){aFastAll=!aFastAll;keepScroll(render);}
+function bandOf(mins){let b=FAST_BANDS[0];FAST_BANDS.forEach(function(x){if(mins>=x.min)b=x;});return b;}
+function bandIdx(b){return FAST_BANDS.indexOf(b);}
+function fmtDur(m){m=Math.round(m);const h=Math.floor(m/60),mm=m%60;return h+'h '+pad2(mm)+'m';}
+function fmtClock(ts){return new Date(ts).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});}
+function fmtDT(ts){return fmtShort(dateOf(ts))+', '+fmtClock(ts);}
+function eatDay(ts){return fmtLocal(new Date(ts-FAST_DAY_START_H*3600000));}
+function median(a){if(!a.length)return null;const s=a.slice().sort(function(x,y){return x-y;}),m=Math.floor(s.length/2);return s.length%2?s[m]:(s[m-1]+s[m])/2;}
+
+// Builds completed intervals (last intake of one eating day → first intake of the NEXT consecutive eating day),
+// uncertain intervals (missing/untimed data) and the ongoing estimate. Zero-calorie entries are ignored.
+function computeFasts(){
+  const days={};let untimedEntries=0;
+  S.entries.forEach(function(e){
+    if(!e||!isFinite(e.timestamp)||!(+e.calories>0))return;
+    const k=eatDay(e.timestamp),d=days[k]||(days[k]={date:k,evs:[],untimed:0});
+    if(realTs(e))d.evs.push(e.timestamp);else{d.untimed++;untimedEntries++;}
+  });
+  const keys=Object.keys(days).sort();
+  keys.forEach(function(k){const d=days[k];d.reliable=d.untimed===0&&d.evs.length>0;d.first=d.evs.length?Math.min.apply(null,d.evs):null;d.last=d.evs.length?Math.max.apply(null,d.evs):null;});
+  const complete=[],uncertain=[];
+  for(let i=1;i<keys.length;i++){
+    const a=days[keys[i-1]],b=days[keys[i]],gap=daysBetween(a.date,b.date);
+    if(gap===1&&a.reliable&&b.reliable&&b.first>a.last){
+      const mins=(b.first-a.last)/60000;
+      complete.push({start:a.last,end:b.first,mins:mins,endDay:b.date,band:bandOf(mins)});
+    }else{
+      const why=gap>1?'No food logged on '+(gap>2?(gap-1)+' days':'1 day')+' between '+fmtShort(a.date)+' and '+fmtShort(b.date)+', so the gap is unknown.':'Some entries on '+fmtShort(gap===1&&!a.reliable?a.date:b.date)+' have no recorded time.';
+      uncertain.push({endDay:b.date,startDay:a.date,why:why});
+    }
+  }
+  let ongoing=null;
+  if(keys.length){
+    const L=days[keys[keys.length-1]],now=Date.now();
+    if(!L.reliable)ongoing={status:'uncertain',why:'Some of your latest entries have no recorded time.'};
+    else{
+      const mins=(now-L.last)/60000;
+      if(mins<0)ongoing={status:'uncertain',why:'Your latest entry is timed in the future.'};
+      else if(mins>48*60)ongoing={status:'stale',why:'No food logged since '+fmtDT(L.last)+'. A long gap in the log is not proof of a fast.',last:L.last};
+      else ongoing={status:'ongoing',start:L.last,mins:mins,band:bandOf(mins)};
+    }
+  }
+  return {complete:complete,uncertain:uncertain,ongoing:ongoing,untimedEntries:untimedEntries,loggedDays:keys.length};
+}
+
+function fastTimelineHTML(mins,activeId){
+  const N=FAST_BANDS.length;
+  let pos=null;
+  if(mins!=null){const b=bandOf(mins),i=bandIdx(b),next=FAST_BANDS[i+1],span=next?next.min-b.min:720;pos=(i+Math.min(0.95,(mins-b.min)/span))/N*100;}
+  const act=activeId?bandIdx(FAST_BANDS.filter(function(b){return b.id===activeId;})[0]):(mins!=null?bandIdx(bandOf(mins)):-1);
+  return `<div class="ftl" role="group" aria-label="Fasting duration categories">
+    <div class="ftl-bar">${FAST_BANDS.map(function(b,i){return `<button class="ftl-seg ${i===act?'on':''}" style="--c:${b.color};${i<=act&&mins!=null&&!activeId?'background:'+b.color+';':''}" onclick="selFastCat('${b.id}')" aria-label="${esc(b.name)}"></button>`;}).join('')}</div>
+    ${pos!=null?`<div class="ftl-mark" style="left:${pos.toFixed(1)}%">▼</div>`:''}
+    <div class="ftl-lbl">${FAST_BANDS.map(function(b){return `<span>${b.short}</span>`;}).join('')}</div></div>`;
+}
+function fastIntervalRow(it){
+  const b=it.band;
+  return `<div class="fi"><div class="fi-top"><b>${fmtDur(it.mins)}</b><span class="chip" style="color:${b.color};background:${b.color}22">${esc(b.pat?b.pat+' pattern':b.name)}</span><span class="chip" style="color:#94a3b8;background:rgba(148,163,184,.12)">complete</span></div>
+    <div class="note">${fmtDT(it.start)} → ${fmtDT(it.end)} <span style="color:#475569">(from recorded intake)</span></div></div>`;
+}
+function fastUncRow(u){return `<div class="fi"><div class="fi-top"><b style="color:#94a3b8">Uncertain</b><span class="chip" style="color:#94a3b8;background:rgba(148,163,184,.12)">not classified</span></div><div class="note">Ending ${fmtShort(u.endDay)} — ${esc(u.why)}</div></div>`;}
+
+function secFasting(c){
+  const F=c.fast||(c.fast=computeFasts());
+  const inR=F.complete.filter(function(i){return i.endDay>=c.a&&i.endDay<=c.t;});
+  const uncR=F.uncertain.filter(function(i){return i.endDay>=c.a&&i.endDay<=c.t;});
+  const title='Fasting stages';
+  if(!F.complete.length&&!(F.ongoing&&F.ongoing.status==='ongoing')){
+    return secCard('fasting',{title:title,body:noData(F.loggedDays?`Not enough timed data yet. A fasting interval needs a recorded time for the last food of one day <i>and</i> the first food of the next day. ${F.untimedEntries?F.untimedEntries+' older entr'+(F.untimedEntries>1?'ies have':'y has')+' no recorded time and '+(F.untimedEntries>1?'are':'is')+' left out. ':''}New entries record the time automatically.`:'Log meals with their times to see fasting-duration categories.')});
+  }
+  const on=F.ongoing&&F.ongoing.status==='ongoing'?F.ongoing:null;
+  const latest=F.complete.length?F.complete[F.complete.length-1]:null;
+  const focusMins=on?on.mins:(latest?latest.mins:null),focusBand=on?on.band:(latest?latest.band:null);
+  const sel=aFastCat?FAST_BANDS.filter(function(b){return b.id===aFastCat;})[0]:null;
+  const shown=sel||focusBand;
+  // headline
+  let head;
+  if(on)head=`<div class="headline"><div class="big" style="color:${on.band.color}">${fmtDur(on.mins)}</div><span class="chip" style="color:#fbbf24;background:#fbbf2420">ongoing · estimated from your food logs</span></div>
+      <div class="note">Since your last logged intake at ${fmtDT(on.start)}. Updates when you open or refresh the app — not a timer.</div>`;
+  else head=`<div class="headline"><div class="big" style="color:${latest.band.color}">${fmtDur(latest.mins)}</div><span class="chip" style="color:#94a3b8;background:rgba(148,163,184,.14)">last completed interval</span></div>
+      <div class="note">${fmtDT(latest.start)} → ${fmtDT(latest.end)}, based on recorded intake.${F.ongoing&&F.ongoing.status!=='ongoing'?' '+esc(F.ongoing.why):''}</div>`;
+  const expl=`<div class="fx-ex" style="border-color:${shown.color}66"><b style="color:${shown.color}">${esc(shown.name)}${shown.pat?' · '+shown.pat:''}</b>${sel?` <span class="note">(showing the selected category)</span>`:''}<div class="note" style="color:#cbd5e1;margin-top:3px">${esc(shown.ex)}${shown.warn?' Neutral caution: this is a long interval and may not be suitable for everyone.':''}</div></div>`;
+  // stats
+  const durs=inR.map(function(i){return i.mins;});
+  const avg=durs.length?durs.reduce(function(a,b){return a+b;},0)/durs.length:null,med=median(durs);
+  const mini=durs.length?miniRow([['Average',fmtDur(avg)],['Median',fmtDur(med)],['Longest',fmtDur(Math.max.apply(null,durs))],['Shortest',fmtDur(Math.min.apply(null,durs))]]):'';
+  // distribution rows
+  const byBand={};FAST_BANDS.forEach(function(b){byBand[b.id]=[];});inR.forEach(function(i){byBand[i.band.id].push(i);});
+  const dist=FAST_BANDS.map(function(b){
+    const list=byBand[b.id],n=list.length,pct=inR.length?n/inR.length*100:0,open=aFastCat===b.id;
+    return `<div class="fc ${open?'on':''}"><button class="fc-row" onclick="selFastCat('${b.id}')" aria-expanded="${open}"><span class="dot" style="background:${b.color}"></span><span class="fc-n">${esc(b.name)}${b.pat?' <em>'+b.pat+'</em>':''}</span><span class="fc-c"><b>${n}</b> day${n===1?'':'s'} · ${pct.toFixed(0)}%</span></button>
+      <div class="fc-bar"><i style="width:${pct.toFixed(1)}%;background:${b.color}"></i></div>
+      ${open?`<div class="fc-more">${n?list.slice().reverse().map(fastIntervalRow).join(''):'<div class="note">No completed intervals in this category within the selected range.</div>'}</div>`:''}</div>`;
+  }).join('');
+  const body=`${head}${fastTimelineHTML(focusMins,aFastCat)}${expl}${mini}
+    <div class="sub-t" style="margin-top:14px">Days in each category <span class="note">(${inR.length} completed interval${inR.length===1?'':'s'} in range · tap a row for dates)</span></div>${dist}
+    ${uncR.length?`<div class="note" style="margin-top:8px">${uncR.length} interval${uncR.length===1?'':'s'} in this range couldn't be classified because of missing or untimed logs (see details).</div>`:''}
+    ${on&&on.band.warn?`<div class="insight" style="background:#fbbf2410;border:1px solid #fbbf2425;margin-top:10px"><span class="insight-text" style="color:#fbbf24">Estimated gap is long. Prolonged fasting is not suitable for everyone — this isn't a target.</span></div>`:''}`;
+  // details
+  let detail='';
+  // calendar strip
+  const stripFrom=daysBetween(c.a,c.t)+1>120?addDays(c.t,-119):c.a;
+  const endMap={};F.complete.forEach(function(i){endMap[i.endDay]=i;});const uncMap={};F.uncertain.forEach(function(u){uncMap[u.endDay]=u;});
+  const cells=dateList(stripFrom,c.t).map(function(d){
+    const i=endMap[d],u=uncMap[d],sl=aFastDay===d;
+    const st=i?`background:${i.band.color}`:u?'background:repeating-linear-gradient(45deg,#334155,#334155 3px,#1e293b 3px,#1e293b 6px)':'background:rgba(255,255,255,0.06)';
+    return `<button class="fcell ${sl?'sel':''}" style="${st}" onclick="selFastDay('${d}')" aria-label="${fmtLong(d)}: ${i?esc(i.band.name)+' '+fmtDur(i.mins):u?'uncertain':'no interval'}"></button>`;
+  }).join('');
+  let dayInfo='';
+  if(aFastDay){const i=endMap[aFastDay],u=uncMap[aFastDay];dayInfo=`<div class="selday"><b>${fmtLong(aFastDay)}</b><div style="margin-top:6px">${i?fastIntervalRow(i):u?fastUncRow(u):'<span class="note">No interval ends on this day (nothing logged, or it is the first logged day).</span>'}</div></div>`;}
+  detail+=`<div class="sub-t">Category reached each day <span class="note">(day the interval ended)</span></div><div class="fcells">${cells}</div>
+    <div class="legend">${FAST_BANDS.map(function(b){return `<span><i style="background:${b.color}"></i>${b.short}</span>`;}).join('')}<span><i style="background:#334155"></i>Uncertain</span><span><i style="background:rgba(255,255,255,0.1)"></i>None</span></div>${dayInfo}`;
+  // duration chart
+  const chartItems=inR.slice(-60).map(function(i){return {label:fmtShort(i.endDay),v:i.mins/60,color:i.band.color,tip:fmtShort(i.endDay)+': '+fmtDur(i.mins)+' · '+i.band.name};});
+  detail+=`<div class="sub-t">Interval length <span class="note">(hours, colored by category${inR.length>60?', latest 60':''})</span></div>${chartOrNone(barChartSVG(chartItems,{w:CH.w,fs:CH.fs,h:150}))}
+    <div class="note">${inR.length>=3?'Colors show the category, not a score — longer is not better.':'Needs a few completed intervals to show a pattern.'}</div>`;
+  // weekly / monthly
+  const grp=function(keyf,labelf,max){
+    const m={};inR.forEach(function(i){const k=keyf(i.endDay);(m[k]||(m[k]=[])).push(i);});
+    const ks=Object.keys(m).sort().slice(-max);let prev=null;
+    const rows=ks.map(function(k){
+      const l=m[k],a=l.reduce(function(s,i){return s+i.mins;},0)/l.length,cnt={};l.forEach(function(i){cnt[i.band.id]=(cnt[i.band.id]||0)+1;});
+      const top=FAST_BANDS.slice().sort(function(x,y){return (cnt[y.id]||0)-(cnt[x.id]||0);})[0];
+      const dl=prev!=null?(a-prev):null;prev=a;
+      return {k:k,row:kvr(labelf(k),fmtDur(a)+' avg · '+l.length+' int. · most: '+(top.pat||top.short)+(dl!=null?' <span style="color:#94a3b8;font-weight:500">('+(dl>=0?'+':'−')+Math.round(Math.abs(dl))+' min)</span>':''))};
+    });
+    return rows.map(function(r){return r.row;}).reverse().join('')||noData('No data in range.');
+  };
+  detail+=`<div class="sub-t">Weekly pattern <span class="note">(changes are vs the previous listed week)</span></div>${grp(function(d){return mondayOf(d);},function(k){return 'Week of '+fmtShort(k);},8)}
+    <div class="sub-t">Monthly pattern</div>${grp(function(d){return d.slice(0,7);},function(k){return parseDS(k+'-01').toLocaleDateString('en-US',{month:'long',year:'numeric'});},6)}`;
+  // list
+  const all=inR.slice().reverse(),lst=aFastAll?all:all.slice(0,10);
+  detail+=`<div class="sub-t">Completed intervals <span class="note">(${all.length} in range)</span></div>${lst.map(fastIntervalRow).join('')||noData('None in this range.')}${all.length>10?`<button class="btn btn-sm btn-ghost" style="width:100%;margin-top:8px" onclick="toggleFastAll()">${aFastAll?'Show fewer':'Show all '+all.length}</button>`:''}`;
+  if(uncR.length)detail+=`<div class="sub-t">Uncertain intervals <span class="note">(excluded from all statistics)</span></div>${uncR.slice().reverse().slice(0,15).map(fastUncRow).join('')}`;
+  detail+=`<div class="sub-t">How this works</div><div class="note">An interval runs from the last logged calorie intake of one day to the first logged intake of the next consecutive day (food logged before ${FAST_DAY_START_H} AM counts toward the previous day; zero-calorie entries are ignored). Only entries with a real recorded time are used. If a day has no logs or untimed entries, the interval is shown as uncertain — a missing log is never treated as a fast. The ongoing figure is the time since your last logged intake, estimated when the app opens.</div>
+    <div class="insight" style="background:#fbbf2410;border:1px solid #fbbf2425;margin-top:10px;display:block"><span class="insight-text" style="color:#fbbf24;font-size:12px;line-height:1.5">${FAST_SAFETY}</span></div>`;
+  return secCard('fasting',{title:title,body:body,detail:detail});
+}
+
+// ── NEW THEMES: interactive backgrounds (Lava Lamp, Blueprint, Tidepool, Vital Sign) ──
+(function(){
+const NEW=['lava','blueprint','tide','vital'],T={x:innerWidth/2,y:innerHeight*.4,d:0,beat:0,sv:0,ly:scrollY,lx:0,ky:0},RIP=[];
+function mv(x,y){T.x=x;T.y=y;if(curTheme==='tide'&&motionOn&&Math.hypot(x-T.lx,y-T.ky)>26){T.lx=x;T.ky=y;if(RIP.length<40)RIP.push({x:x,y:y,r:3,m:70,a:.55});}}
+addEventListener('pointermove',function(e){mv(e.clientX,e.clientY);},{passive:true});
+addEventListener('touchmove',function(e){const t=e.touches[0];if(t)mv(t.clientX,t.clientY);},{passive:true});
+addEventListener('pointerdown',function(e){T.x=e.clientX;T.y=e.clientY;T.d=1;T.beat=1;if(RIP.length<40)RIP.push({x:e.clientX,y:e.clientY,r:6,m:230,a:.9});},{passive:true});
+['pointerup','pointercancel'].forEach(function(n){addEventListener(n,function(){T.d=0;},{passive:true});});
+addEventListener('scroll',function(){T.sv=Math.max(-24,Math.min(24,scrollY-T.ly));T.ly=scrollY;},{passive:true});
+
+function lava(W,H,cx){
+  const sc=8,w=Math.ceil(W/sc),h=Math.ceil(H/sc),oc=document.createElement('canvas');oc.width=w;oc.height=h;
+  const ox=oc.getContext('2d'),id=ox.createImageData(w,h),D=id.data,B=[],me={x:0,y:0,r:60};
+  for(let i=0;i<9;i++)B.push({x:Math.random()*W,y:Math.random()*H,vx:Math.random()-.5,vy:Math.random()-.5,r:55+Math.random()*60});
+  return function(){
+    me.x=T.x;me.y=T.y;me.r=60+T.d*40;
+    B.forEach(function(b){const dx=T.x-b.x,dy=T.y-b.y,d=Math.hypot(dx,dy)+1,g=(d<320?.05:.006)*(1+T.d*3);
+      b.vx+=dx/d*g+(Math.random()-.5)*.06;b.vy+=dy/d*g+(Math.random()-.5)*.06-T.sv*.03;
+      b.vx*=.985;b.vy*=.985;b.x+=b.vx;b.y+=b.vy;
+      if(b.x<0||b.x>W)b.vx*=-1;if(b.y<-50||b.y>H+50)b.vy*=-1;});
+    const all=B.concat(me);
+    for(let y=0;y<h;y++)for(let x=0;x<w;x++){let f=0;const X=x*sc,Y=y*sc;
+      for(let k=0;k<all.length;k++){const b=all[k],dx=X-b.x,dy=Y-b.y;f+=b.r*b.r/(dx*dx+dy*dy+1);}
+      const i=(y*w+x)*4,a=Math.max(0,Math.min(1,(f-.8)*2.5)),t=Math.max(0,Math.min(1,(f-1)/2));
+      D[i]=230+25*t;D[i+1]=40+170*t;D[i+2]=120-70*t;D[i+3]=a*(120+90*t);}
+    ox.putImageData(id,0,0);cx.clearRect(0,0,W,H);cx.imageSmoothingEnabled=true;cx.drawImage(oc,0,0,W,H);
+  };
+}
+function blueprint(W,H,cx){
+  return function(){
+    cx.clearRect(0,0,W,H);cx.lineWidth=1;cx.strokeStyle='rgba(224,242,254,.6)';cx.setLineDash([6,6]);
+    cx.beginPath();cx.moveTo(0,T.y);cx.lineTo(W,T.y);cx.moveTo(T.x,0);cx.lineTo(T.x,H);cx.stroke();cx.setLineDash([]);
+    cx.beginPath();cx.arc(T.x,T.y,16+T.d*12,0,6.283);cx.stroke();
+    cx.fillStyle='#e0f2fe';
+    for(let gx=Math.floor((T.x-120)/24)*24;gx<T.x+120;gx+=24)for(let gy=Math.floor((T.y-120)/24)*24;gy<T.y+120;gy+=24){const d=Math.hypot(gx-T.x,gy-T.y);if(d<120){cx.globalAlpha=1-d/120;cx.fillRect(gx-1.5,gy-1.5,3,3);}}
+    cx.globalAlpha=1;cx.font='600 11px "Chakra Petch",monospace';
+    cx.fillText('X '+Math.round(T.x)+'  Y '+Math.round(T.y+scrollY),Math.min(T.x+24,W-110),Math.max(T.y-12,14));
+  };
+}
+function tide(W,H,cx){
+  function nb(init){return{x:Math.random()*W,y:init?Math.random()*H:H+20,r:3+Math.random()*11,v:.25+Math.random()*.6,p:Math.random()*6.28};}
+  const Bu=[];for(let i=0;i<26;i++)Bu.push(nb(true));
+  return function(){
+    cx.clearRect(0,0,W,H);
+    Bu.forEach(function(b,i){b.y-=b.v-T.sv*.05;b.p+=.02;b.x+=Math.sin(b.p)*.35;
+      if(b.y<-20){Bu[i]=nb();return;}
+      if(Math.hypot(b.x-T.x,b.y-T.y)<b.r+24&&RIP.length<40){RIP.push({x:b.x,y:b.y,r:b.r,m:90,a:.6});Bu[i]=nb();return;}
+      cx.globalAlpha=1;cx.lineWidth=1.2;cx.strokeStyle='rgba(190,255,245,.4)';cx.fillStyle='rgba(255,255,255,.05)';
+      cx.beginPath();cx.arc(b.x,b.y,b.r,0,6.283);cx.fill();cx.stroke();
+      cx.fillStyle='rgba(255,255,255,.55)';cx.beginPath();cx.arc(b.x-b.r*.35,b.y-b.r*.35,Math.max(1,b.r*.2),0,6.283);cx.fill();});
+    for(let i=RIP.length-1;i>=0;i--){const r=RIP[i];r.r+=2.4;const k=r.r/r.m;if(k>=1){RIP.splice(i,1);continue;}
+      cx.globalAlpha=r.a*(1-k);cx.lineWidth=2;cx.strokeStyle='#5eead4';cx.beginPath();cx.arc(r.x,r.y,r.r,0,6.283);cx.stroke();
+      cx.strokeStyle='#f9a8d4';cx.lineWidth=1;cx.beginPath();cx.arc(r.x,r.y,r.r*.72,0,6.283);cx.stroke();}
+    cx.globalAlpha=1;
+  };
+}
+function vital(W,H,cx){
+  const st=2.2,N=Math.ceil(W/st),base=H*.8,tr=new Array(N).fill(0),L=N-14;let hx=0,bt=999,A=55,ph=0;
+  function wv(t,a){if(t<6)return -5*Math.sin(Math.PI*t/6);if(t>=10&&t<12)return 6;if(t>=12&&t<17)return -a*Math.sin(Math.PI*(t-12)/5);if(t>=17&&t<20)return 14*Math.sin(Math.PI*(t-17)/3);if(t>=28&&t<44)return -11*Math.sin(Math.PI*(t-28)/16);return 0;}
+  return function(){
+    ph++;hx=(hx+1)%N;
+    if(T.beat){T.beat=0;bt=0;A=100;}else if(ph%120===0||(Math.abs(T.sv)>8&&bt>50)){bt=0;A=55;}
+    bt++;tr[hx]=wv(bt,A);
+    cx.clearRect(0,0,W,H);cx.lineWidth=2;cx.lineJoin='round';cx.strokeStyle='#39ff88';
+    for(let b=0;b<8;b++){cx.globalAlpha=1-b/8.5;cx.beginPath();let pi=-1;
+      for(let j=Math.floor(b*L/8);j<=Math.floor((b+1)*L/8);j++){const i=((hx-j)%N+N)%N,x=i*st,y=base+tr[i];if(pi<0||i>pi)cx.moveTo(x,y);else cx.lineTo(x,y);pi=i;}
+      cx.stroke();}
+    cx.globalAlpha=.35;cx.fillStyle='#39ff88';cx.beginPath();cx.arc(hx*st,base+tr[hx],7,0,6.283);cx.fill();
+    cx.globalAlpha=1;cx.fillStyle='#eafff2';cx.beginPath();cx.arc(hx*st,base+tr[hx],3,0,6.283);cx.fill();
+  };
+}
+const baseFx=fxStart;
+fxStart=function(){
+  baseFx();cancelAnimationFrame(window.__nf||0);
+  const cv=document.getElementById('fx'),m=curTheme;
+  if(!cv||!motionOn||NEW.indexOf(m)<0)return;
+  const dpr=Math.min(2,devicePixelRatio||1),W=innerWidth,H=innerHeight,cx=cv.getContext('2d');
+  cv.width=W*dpr;cv.height=H*dpr;cx.setTransform(dpr,0,0,dpr,0,0);
+  const draw=({lava:lava,blueprint:blueprint,tide:tide,vital:vital})[m](W,H,cx);
+  (function loop(){if(!document.hidden){T.sv*=.9;draw();}window.__nf=requestAnimationFrame(loop);})();
+};
+})();
 
 // ── INIT ──
 ensureIds();
